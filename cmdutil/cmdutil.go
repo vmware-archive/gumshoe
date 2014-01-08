@@ -10,7 +10,7 @@ import (
 
 var (
     InputFile   *os.File = os.Stdin
-    inputBuffer *bufio.Reader
+    InputBuffer *bufio.Reader
 )
 
 func ReadLine() string {
@@ -37,8 +37,8 @@ func runCommand(command *exec.Cmd) {
 }
 
 func buffer() *bufio.Reader {
-    if inputBuffer == nil {
-        inputBuffer = bufio.NewReader(InputFile)
+    if InputBuffer == nil {
+        InputBuffer = bufio.NewReader(InputFile)
     }
-    return inputBuffer
+    return InputBuffer
 }

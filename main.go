@@ -1,9 +1,10 @@
 package main
 
 import (
-    "github.com/codegangsta/cli"
     "os"
-    "trackerapi"
+
+    "github.com/codegangsta/cli"
+    "github.com/pivotal/gumshoe/trackerapi"
 )
 
 func main() {
@@ -16,7 +17,8 @@ func main() {
             Name:  "me",
             Usage: "prints out Tracker's representation of your account",
             Action: func(c *cli.Context) {
-                trackerapi.Me()
+                client := trackerapi.NewClient()
+                client.Me()
             },
         },
     }
