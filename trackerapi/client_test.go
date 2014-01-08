@@ -49,12 +49,6 @@ var _ = Describe("Client #Me", func() {
         os.Remove("/tmp/temp_tracker")
     })
 
-    It("writes the API token to a file", func() {
-        client.Me()
-        contents, _ := ioutil.ReadFile("/tmp/temp_tracker")
-        Expect(string(contents)).To(Equal("abcde90792f3898ab464cd3412345"))
-    })
-
     It("prints the user representation to the output file", func() {
         client.Me()
 

@@ -41,7 +41,6 @@ func (c *Client) Me() {
         panic(err)
     }
     c.Logger.Println(c.user)
-    ioutil.WriteFile(c.FileLocation, []byte(c.user.APIToken), 0644)
 }
 
 func (c *Client) makeRequest() ([]byte, error) {
@@ -90,9 +89,12 @@ func (c *Client) setCredentials(user *User) {
 }
 
 func (c *Client) getUser() *User {
-    user := NewUser()
+    user := &User{
+        authenticator: &APIAuthenticator{},
+    }
     if !user.IsAuthenticated() {
         c.setCredentials(user)
+        user.Authenticate()
     }
     return user
 }
