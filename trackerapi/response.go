@@ -12,3 +12,10 @@ type MeResponseStructure struct {
         OlsonName string `json:"olson_name"`
     }   `json:"time_zone"`
 }
+
+type ProjectResponseStructure struct {
+    ID               int    `json:"id"`
+    Name             string `json:"name"`
+    Description      string `json:"description"`
+    CurrentIteration int    `json:"current_iteration_number"`
+}

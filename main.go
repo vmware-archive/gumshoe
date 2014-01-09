@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "os"
 
     "github.com/codegangsta/cli"
@@ -12,13 +13,21 @@ func main() {
     app.Name = "gumshoe"
     app.Usage = "talks to tracker"
 
+    client := trackerapi.NewClient()
     app.Commands = []cli.Command{
         {
             Name:  "me",
             Usage: "prints out Tracker's representation of your account",
             Action: func(c *cli.Context) {
-                client := trackerapi.NewClient()
-                client.Me()
+                output := client.Me()
+                fmt.Println(output)
+            },
+        },
+        {
+            Name:  "projects",
+            Usage: "prints out a list of Tracker projects for your account",
+            Action: func(c *cli.Context) {
+                client.Projects()
             },
         },
     }

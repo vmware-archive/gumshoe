@@ -2,59 +2,99 @@ package trackerapi_test
 
 import (
     "io/ioutil"
-    "os"
+    "net/http/httptest"
 
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 
-var _ = Describe("Client #Me", func() {
+var _ = Describe("Client", func() {
     var (
         json   string
         client *trackerapi.Client
+        ts     *httptest.Server
     )
 
     BeforeEach(func() {
-        json = `{
-            "api_token": "abcde90792f3898ab464cd3412345",
-            "name": "Mister Tee",
-            "kind": "me",
-            "id": 123,
-            "email": "mister_tee@pivotallabs.com",
-            "initials": "MT",
-            "username": "mister_tee",
-            "time_zone": {
-                "kind": "time_zone",
-                "offset": "-08:00",
-                "olson_name": "America/Los_Angeles"
-            }
-        }`
-
         client = trackerapi.NewClient()
-        ts := testServer("", "", "abcde90792f3898ab464cd3412345", json)
-        client.SetResolver(&trackerapi.Resolver{
-            MeRequestURL: ts.URL,
-        })
         store := trackerapi.NewStore()
         store.Set("APIToken", "abcde90792f3898ab464cd3412345")
-        client.SetLogger(trackerapi.NewFileLogger("/tmp/stdout"))
     })
 
     AfterEach(func() {
         client.Cleanup()
-        os.Remove("/tmp/stdout")
+        ts.Close()
     })
 
-    It("prints the user representation to the output file", func() {
-        client.Me()
+    Describe("Me", func() {
+        BeforeEach(func() {
+            json = `{
+                "api_token": "abcde90792f3898ab464cd3412345",
+                "name": "Mister Tee",
+                "kind": "me",
+                "id": 123,
+                "email": "mister_tee@pivotallabs.com",
+                "initials": "MT",
+                "username": "mister_tee",
+                "time_zone": {
+                    "kind": "time_zone",
+                    "offset": "-08:00",
+                    "olson_name": "America/Los_Angeles"
+                }
+            }`
 
-        fileContents, _ := ioutil.ReadFile("/tmp/stdout")
-        Expect(string(fileContents)).To(ContainSubstring("Username:  mister_tee"))
-        Expect(string(fileContents)).To(ContainSubstring("Name:      Mister Tee"))
-        Expect(string(fileContents)).To(ContainSubstring("Email:     mister_tee@pivotallabs.com"))
-        Expect(string(fileContents)).To(ContainSubstring("API Token: abcde90792f3898ab464cd3412345"))
-        Expect(string(fileContents)).To(ContainSubstring("Initials:  MT"))
-        Expect(string(fileContents)).To(ContainSubstring("Timezone:  America/Los_Angeles"))
+            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            client.SetResolver(&trackerapi.Resolver{
+                MeRequestURL: ts.URL,
+            })
+        })
+
+        It("prints the user representation to the output file", func() {
+            output := client.Me()
+
+            printedOutput := output.String()
+            Expect(printedOutput).To(ContainSubstring("Username  : mister_tee"))
+            Expect(printedOutput).To(ContainSubstring("Name      : Mister Tee"))
+            Expect(printedOutput).To(ContainSubstring("Email     : mister_tee@pivotallabs.com"))
+            Expect(printedOutput).To(ContainSubstring("API Token : abcde90792f3898ab464cd3412345"))
+            Expect(printedOutput).To(ContainSubstring("Initials  : MT"))
+            Expect(printedOutput).To(ContainSubstring("Timezone  : America/Los_Angeles"))
+        })
+    })
+
+    Describe("Projects", func() {
+        BeforeEach(func() {
+            json = `[
+               {
+                   "id": 98,
+                   "current_iteration_number": 1,
+                   "name": "Learn About the Force"
+               },
+               {
+                   "id": 99,
+                   "description": "Expeditionary Battle Planetoid",
+                   "current_iteration_number": 15,
+                   "name": "Death Star"
+               }
+            ]`
+
+            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            client.SetResolver(&trackerapi.Resolver{
+                ProjectsRequestURL: ts.URL,
+            })
+        })
+
+        PIt("prints a representation of the user's projects to the screen", func() {
+            client.Projects()
+
+            fileContents, _ := ioutil.ReadFile("/tmp/stdout")
+            Expect(string(fileContents)).To(ContainSubstring("Learn About the Force (98)"))
+            Expect(string(fileContents)).To(ContainSubstring("    Current Iteration : 1"))
+
+            Expect(string(fileContents)).To(ContainSubstring("Death Star (99)"))
+            Expect(string(fileContents)).To(ContainSubstring("    Description       : Expeditionary Battle Planetoid"))
+            Expect(string(fileContents)).To(ContainSubstring("    Current Iteration : 15"))
+        })
     })
 })

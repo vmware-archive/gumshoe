@@ -1,6 +1,7 @@
 package trackerapi
 
 import (
+    "fmt"
     "log"
     "os"
 
@@ -31,7 +32,7 @@ func (c *Client) SetResolver(resolver *Resolver) {
     c.Resolver = resolver
 }
 
-func (c *Client) Me() {
+func (c *Client) Me() fmt.Stringer {
     var err error
     c.user, err = c.setupUser()
     handleError(err)
@@ -50,13 +51,31 @@ func (c *Client) Me() {
     err = request.Execute()
     handleError(err)
 
-    c.user.APIToken = structure.APIToken
-    c.user.Username = structure.Username
-    c.user.Name = structure.Name
-    c.user.Email = structure.Email
-    c.user.Initials = structure.Initials
-    c.user.Timezone = structure.Timezone.OlsonName
-    c.Logger.Println(c.user)
+    return &MeOutput{
+        user: structure,
+    }
+}
+
+func (c *Client) Projects() {
+    var err error
+    c.user, err = c.setupUser()
+    handleError(err)
+
+    structure := &[]ProjectResponseStructure{}
+    strategy := &APITokenStrategy{
+        APIToken: c.user.APIToken,
+    }
+
+    request := &Request{
+        url:            c.Resolver.ProjectsRequestURL,
+        authStrategy:   strategy,
+        responseStruct: structure,
+    }
+
+    err = request.Execute()
+    handleError(err)
+
+    c.Logger.Println(structure)
 }
 
 func (c *Client) setCredentials(user *User) {

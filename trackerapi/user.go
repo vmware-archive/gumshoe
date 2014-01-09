@@ -1,7 +1,5 @@
 package trackerapi
 
-import "fmt"
-
 type Authenticator interface {
     Authenticate(*User) (string, error)
 }
@@ -38,8 +36,4 @@ func (u *User) Authenticate() error {
     token, err := u.authenticator.Authenticate(u)
     u.APIToken = token
     return err
-}
-
-func (u *User) String() string {
-    return fmt.Sprintf("Username:  %s\nName:      %s\nEmail:     %s\nAPI Token: %s\nTimezone:  %s\nInitials:  %s", u.Username, u.Name, u.Email, u.APIToken, u.Timezone, u.Initials)
 }
