@@ -5,7 +5,7 @@ The Ginkgo CLI is fully documented [here](http://onsi.github.io/ginkgo/#the_gink
 
 To install:
 
-	go install github.com/onsi/ginkgo/ginkgo
+	go install github.com/pivotal/gumshoe/repos/ginkgo/ginkgo
 
 To run tests:
 
@@ -44,7 +44,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/onsi/ginkgo/config"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
 	"os"
 	"time"
 )

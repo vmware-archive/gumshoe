@@ -1,7 +1,7 @@
 package ginkgo
 
 import (
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 )
 
 func init() {

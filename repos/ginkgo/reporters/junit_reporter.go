@@ -11,8 +11,8 @@ package reporters
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/types"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
 	"os"
 	"strings"
 )

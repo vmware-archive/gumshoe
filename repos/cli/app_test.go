@@ -2,7 +2,7 @@ package cli_test
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
+	"github.com/pivotal/gumshoe/repos/cli"
 	"os"
 	"testing"
 )

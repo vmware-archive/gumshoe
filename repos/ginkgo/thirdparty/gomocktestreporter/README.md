@@ -1,4 +1,4 @@
-[![Ginkgo: A Golang BDD Testing Framework](http://onsi.github.io/ginkgo/images/ginkgo.png)](https://github.com/onsi/ginkgo)
+[![Ginkgo: A Golang BDD Testing Framework](http://onsi.github.io/ginkgo/images/ginkgo.png)](https://github.com/pivotal/gumshoe/repos/ginkgo)
 
 #Gomock Test Reporter
 

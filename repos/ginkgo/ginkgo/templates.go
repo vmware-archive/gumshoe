@@ -11,8 +11,8 @@ import (
 var bootstrapText = `package {{.Package}}_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 
 	"testing"
 )
@@ -27,8 +27,8 @@ var specText = `package {{.Package}}_test
 
 import (
 	. "{{.PackageImportPath}}"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 )
 
 var _ = Describe("{{.Subject}}", func() {

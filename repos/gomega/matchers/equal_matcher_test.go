@@ -2,9 +2,9 @@ package matchers_test
 
 import (
 	"errors"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/matchers"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/gomega"
+	. "github.com/pivotal/gumshoe/repos/gomega/matchers"
 )
 
 var _ = Describe("Equal", func() {

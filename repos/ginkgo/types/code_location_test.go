@@ -1,9 +1,9 @@
 package types_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/ginkgo/types"
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/ginkgo/types"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 
 	"runtime"
 )
@@ -49,9 +49,9 @@ func init() {
 Skip: skip()
 /Skip/me
 Skip: skip()
-/Users/whoever/gospace/src/github.com/onsi/ginkgo/whatever.go:10 (0x12314)
+/Users/whoever/gospace/src/github.com/pivotal/gumshoe/repos/ginkgo/whatever.go:10 (0x12314)
 Something: Func()
-/Users/whoever/gospace/src/github.com/onsi/ginkgo/whatever_else.go:10 (0x12314)
+/Users/whoever/gospace/src/github.com/pivotal/gumshoe/repos/ginkgo/whatever_else.go:10 (0x12314)
 SomethingInternalToGinkgo: Func()
 /usr/goroot/pkg/strings/oops.go:10 (0x12341)
 Oops: BlowUp()

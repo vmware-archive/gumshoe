@@ -1,7 +1,7 @@
 package ginkgo
 
 import (
-	"github.com/onsi/ginkgo/types"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
 )
 
 type node interface {

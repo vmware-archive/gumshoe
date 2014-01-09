@@ -2,7 +2,7 @@ package ginkgo
 
 import (
 	"fmt"
-	"github.com/onsi/ginkgo/types"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
 	"reflect"
 	"time"
 )

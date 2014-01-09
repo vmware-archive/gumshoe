@@ -2,8 +2,8 @@ package ginkgo
 
 import (
 	"fmt"
-	"github.com/onsi/ginkgo/types"
-	. "github.com/onsi/gomega"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 	"time"
 )
 

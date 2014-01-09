@@ -1,7 +1,7 @@
 package gomega
 
 import (
-	. "github.com/onsi/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
 	"testing"
 )
 

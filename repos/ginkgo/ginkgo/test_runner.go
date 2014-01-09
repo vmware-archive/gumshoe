@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/onsi/ginkgo/config"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
 	"io"
 	"os"
 	"os/exec"

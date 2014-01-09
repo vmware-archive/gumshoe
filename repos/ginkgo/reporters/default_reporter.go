@@ -8,9 +8,9 @@ These are documented [here](http://onsi.github.io/ginkgo/#running_tests)
 package reporters
 
 import (
-	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/stenographer"
-	"github.com/onsi/ginkgo/types"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
+	"github.com/pivotal/gumshoe/repos/ginkgo/stenographer"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
 )
 
 type DefaultReporter struct {

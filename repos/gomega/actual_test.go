@@ -2,7 +2,7 @@ package gomega
 
 import (
 	"errors"
-	. "github.com/onsi/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
 )
 
 func init() {

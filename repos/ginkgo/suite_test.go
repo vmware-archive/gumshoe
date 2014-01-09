@@ -1,9 +1,9 @@
 package ginkgo
 
 import (
-	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/types"
-	. "github.com/onsi/gomega"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 	"math/rand"
 	"time"
 )

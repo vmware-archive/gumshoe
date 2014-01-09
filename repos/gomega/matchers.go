@@ -3,7 +3,7 @@ package gomega
 import (
 	"fmt"
 
-	"github.com/onsi/gomega/matchers"
+	"github.com/pivotal/gumshoe/repos/gomega/matchers"
 )
 
 //Track whether we've already warned about a deprecated feature. Nobody likes a nag.

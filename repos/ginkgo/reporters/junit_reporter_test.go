@@ -2,11 +2,11 @@ package reporters_test
 
 import (
 	"encoding/xml"
-	. "github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/config"
-	. "github.com/onsi/ginkgo/reporters"
-	"github.com/onsi/ginkgo/types"
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	"github.com/pivotal/gumshoe/repos/ginkgo/config"
+	. "github.com/pivotal/gumshoe/repos/ginkgo/reporters"
+	"github.com/pivotal/gumshoe/repos/ginkgo/types"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 	"io/ioutil"
 	"time"
 )

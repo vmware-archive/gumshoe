@@ -32,7 +32,7 @@ Jump to the [docs](http://onsi.github.io/ginkgo/) to learn more.  To start rolli
     - Write [custom reporters](http://onsi.github.io/ginkgo/#writing_custom_reporters) (for example, Ginkgo comes with a [JUnit XML reporter](http://onsi.github.io/ginkgo/#generating_junit_xml_output))
     - [Adapt an existing matcher library (or write your own!)](http://onsi.github.io/ginkgo/#using_other_matcher_libraries) to work with Ginkgo
 
-## [Gomega](http://github.com/onsi/gomega): Ginkgo's Preferred Matcher Library
+## [Gomega](http://github.com/pivotal/gumshoe/repos/gomega): Ginkgo's Preferred Matcher Library
 
 Learn more about Gomega [here](http://onsi.github.io/gomega/)
 
@@ -42,8 +42,8 @@ You'll need Golang v1.1+ (Ubuntu users: you probably have Golang v1.0 -- you'll 
 
 ```bash
 
-go get github.com/onsi/ginkgo/ginkgo  # installs the ginkgo CLI
-go get github.com/onsi/gomega         # fetches the matcher library
+go get github.com/pivotal/gumshoe/repos/ginkgo/ginkgo  # installs the ginkgo CLI
+go get github.com/pivotal/gumshoe/repos/gomega         # fetches the matcher library
 
 cd path/to/package/you/want/to/test
 

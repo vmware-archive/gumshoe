@@ -1,8 +1,8 @@
 package matchers_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	. "github.com/pivotal/gumshoe/repos/ginkgo"
+	. "github.com/pivotal/gumshoe/repos/gomega"
 )
 
 var _ = Describe("BeZero", func() {
