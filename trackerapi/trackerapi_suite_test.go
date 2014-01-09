@@ -5,6 +5,7 @@ import (
     . "github.com/pivotal/gumshoe/repos/gomega"
 
     "encoding/base64"
+    "errors"
     "fmt"
     "net/http"
     "net/http/httptest"
@@ -29,11 +30,15 @@ func testServer(username, password, token, json string) (ts *httptest.Server) {
         w.Header().Set("Content-Type", "application/json")
         headerToken := r.Header.Get("X-TrackerToken")
         if username != "" && password != "" {
-            auth := parseBasicAuth(r)
-            if auth[0] == username && auth[1] == password {
-                fmt.Fprintln(w, json)
-            } else {
+            auth, err := parseBasicAuth(r)
+            if err != nil {
                 fmt.Fprintln(w, errorJson)
+            } else {
+                if auth[0] == username && auth[1] == password {
+                    fmt.Fprintln(w, json)
+                } else {
+                    fmt.Fprintln(w, errorJson)
+                }
             }
         } else {
             if token == headerToken {
@@ -46,9 +51,14 @@ func testServer(username, password, token, json string) (ts *httptest.Server) {
     return
 }
 
-func parseBasicAuth(r *http.Request) []string {
-    var header string = r.Header["Authorization"][0]
-    parts := strings.SplitN(header, " ", 2)
-    b, _ := base64.StdEncoding.DecodeString(parts[1])
-    return strings.Split(string(b), ":")
+func parseBasicAuth(r *http.Request) ([]string, error) {
+    auth := r.Header["Authorization"]
+    if auth != nil {
+        var header string = auth[0]
+        parts := strings.SplitN(header, " ", 2)
+        b, _ := base64.StdEncoding.DecodeString(parts[1])
+        return strings.Split(string(b), ":"), nil
+    } else {
+        return []string{}, errors.New("")
+    }
 }

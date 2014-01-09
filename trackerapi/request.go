@@ -7,9 +7,9 @@ import (
 )
 
 type Request struct {
-    url       string
-    APIToken  string
-    structure interface{}
+    url            string
+    responseStruct interface{}
+    authStrategy   RequestAuthStrategy
 }
 
 func (r *Request) Execute() error {
@@ -18,7 +18,7 @@ func (r *Request) Execute() error {
     if err != nil {
         return err
     }
-    req.Header.Set("X-TrackerToken", r.APIToken)
+    r.authStrategy.Strategize(req)
     resp, err := httpClient.Do(req)
     if err != nil {
         return err
@@ -28,7 +28,7 @@ func (r *Request) Execute() error {
         return err
     }
 
-    err = json.Unmarshal(body, r.structure)
+    err = json.Unmarshal(body, r.responseStruct)
     if err != nil {
         return err
     }

@@ -1,7 +1,8 @@
 package trackerapi
 
 const (
-    MeRequestURL = "https://www.pivotaltracker.com/services/v5/me"
+    MeRequestURL    = "https://www.pivotaltracker.com/services/v5/me"
+    AuthenticateURL = "https://www.pivotaltracker.com/services/v5/me"
 )
 
 type Resolver struct {

@@ -37,11 +37,16 @@ func (c *Client) Me() {
     handleError(err)
 
     structure := &MeResponseStructure{}
-    request := &Request{
-        url:       c.Resolver.MeRequestURL,
-        APIToken:  c.user.APIToken,
-        structure: structure,
+    strategy := &APITokenStrategy{
+        APIToken: c.user.APIToken,
     }
+
+    request := &Request{
+        url:            c.Resolver.MeRequestURL,
+        authStrategy:   strategy,
+        responseStruct: structure,
+    }
+
     err = request.Execute()
     handleError(err)
 
