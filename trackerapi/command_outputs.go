@@ -28,9 +28,9 @@ func (o *MeOutput) String() string {
 func (o *ProjectsOutput) String() string {
     projects := (*o.projects)
     outputString := ""
-    for i := 0; i < len(projects); i++ {
+    for _, project := range projects {
         projectOutput := &ProjectOutput{
-            project: &projects[i],
+            project: &project,
         }
         outputString += projectOutput.String()
     }
