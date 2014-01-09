@@ -1,0 +1,10 @@
+language: go
+go:
+  - 1.0
+  - 1.1
+  - 1.2
+  - tip
+install:
+  - go get github.com/onsi/ginkgo
+  - go get github.com/onsi/gomega
+  - go get github.com/codegangsta/cli
