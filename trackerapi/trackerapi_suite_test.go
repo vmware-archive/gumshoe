@@ -24,15 +24,23 @@ var errorJson string = `{
     "code":         "invalid_authentication"
 }`
 
-func testServer(username, password, json string) (ts *httptest.Server) {
+func testServer(username, password, token, json string) (ts *httptest.Server) {
     ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/json")
-
-        auth := parseBasicAuth(r)
-        if auth[0] == username && auth[1] == password {
-            fmt.Fprintln(w, json)
+        headerToken := r.Header.Get("X-TrackerToken")
+        if username != "" && password != "" {
+            auth := parseBasicAuth(r)
+            if auth[0] == username && auth[1] == password {
+                fmt.Fprintln(w, json)
+            } else {
+                fmt.Fprintln(w, errorJson)
+            }
         } else {
-            fmt.Fprintln(w, errorJson)
+            if token == headerToken {
+                fmt.Fprintln(w, json)
+            } else {
+                fmt.Fprintln(w, errorJson)
+            }
         }
     }))
     return

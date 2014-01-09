@@ -7,10 +7,6 @@ import (
     u "os/user"
 )
 
-const (
-    DefaultAPIURL = "https://www.pivotaltracker.com/services/v5/me"
-)
-
 func NewLogger(wr io.Writer) *log.Logger {
     return log.New(wr, "", 0)
 }
@@ -30,4 +26,10 @@ func NewStdoutLogger() *log.Logger {
 func homeDir() string {
     usr, _ := u.Current()
     return usr.HomeDir
+}
+
+func handleError(err error) {
+    if err != nil {
+        panic(err)
+    }
 }

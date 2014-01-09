@@ -1,13 +1,11 @@
 package trackerapi_test
 
 import (
-    "fmt"
     "io/ioutil"
     "os"
 
     . "github.com/onsi/ginkgo"
     . "github.com/onsi/gomega"
-    "github.com/pivotal/gumshoe/cmdutil"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 
@@ -34,19 +32,18 @@ var _ = Describe("Client #Me", func() {
         }`
 
         client = trackerapi.NewClient()
-        ts := testServer("mister_tee", "sekret", json)
-        client.URL = ts.URL
-        client.FileLocation = "/tmp/temp_tracker"
-        cmdutil.InputFile, _ = os.Create("/tmp/stdin")
-        cmdutil.InputBuffer = nil
+        ts := testServer("", "", "abcde90792f3898ab464cd3412345", json)
+        client.SetResolver(&trackerapi.Resolver{
+            MeRequestURL: ts.URL,
+        })
+        store := trackerapi.NewStore()
+        store.Set("APIToken", "abcde90792f3898ab464cd3412345")
         client.SetLogger(trackerapi.NewFileLogger("/tmp/stdout"))
-        ioutil.WriteFile("/tmp/stdin", []byte("mister_tee\nsekret\n"), 0644)
     })
 
     AfterEach(func() {
-        os.Remove("/tmp/stdin")
+        client.Cleanup()
         os.Remove("/tmp/stdout")
-        os.Remove("/tmp/temp_tracker")
     })
 
     It("prints the user representation to the output file", func() {
@@ -61,11 +58,3 @@ var _ = Describe("Client #Me", func() {
         Expect(string(fileContents)).To(ContainSubstring("Timezone:  America/Los_Angeles"))
     })
 })
-
-func ExampleClient_SetLogger() {
-    client := trackerapi.NewClient()
-    fmt.Sprintf("%v", client.Logger)
-
-    // Output
-    // foo
-}

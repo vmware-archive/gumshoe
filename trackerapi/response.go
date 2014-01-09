@@ -1,6 +1,6 @@
 package trackerapi
 
-type response struct {
+type MeResponseStructure struct {
     APIToken string `json:"api_token"`
     Username string `json:"username"`
     Name     string `json:"name"`

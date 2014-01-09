@@ -41,7 +41,7 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
             }
         }`
 
-        ts := testServer("mister_tee", "sekret", json)
+        ts := testServer("mister_tee", "sekret", "", json)
         auth.URL = ts.URL
         cmdutil.InputFile, _ = os.Create("/tmp/stdin")
         cmdutil.InputBuffer = nil

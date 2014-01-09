@@ -58,7 +58,7 @@ func (a *APIAuthenticator) makeRequest() ([]byte, error) {
 }
 
 func (a *APIAuthenticator) parse(body []byte) (string, error) {
-    var resp = response{}
+    var resp = MeResponseStructure{}
     err := json.Unmarshal(body, &resp)
     if err != nil {
         return "", err
