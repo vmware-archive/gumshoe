@@ -3,5 +3,5 @@ go:
   - 1.1
   - 1.2
   - tip
-install: git submodules update --init
+install: git submodule update --init
 script: go test -v github.com/pivotal/gumshoe/trackerapi/
