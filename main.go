@@ -3,7 +3,7 @@ package main
 import (
     "os"
 
-    "github.com/codegangsta/cli"
+    "github.com/pivotal/gumshoe/cli"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 

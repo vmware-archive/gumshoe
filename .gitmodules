@@ -1,0 +1,9 @@
+[submodule "ginkgo"]
+	path = ginkgo
+	url = git://github.com/onsi/ginkgo
+[submodule "gomega"]
+	path = gomega
+	url = git://github.com/onsi/gomega
+[submodule "cli"]
+	path = cli
+	url = git://github.com/codegangsta/cli
