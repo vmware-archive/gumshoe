@@ -56,7 +56,7 @@ func (c *Client) Me() fmt.Stringer {
     }
 }
 
-func (c *Client) Projects() {
+func (c *Client) Projects() fmt.Stringer {
     var err error
     c.user, err = c.setupUser()
     handleError(err)
@@ -75,7 +75,9 @@ func (c *Client) Projects() {
     err = request.Execute()
     handleError(err)
 
-    c.Logger.Println(structure)
+    return &ProjectsOutput{
+        projects: structure,
+    }
 }
 
 func (c *Client) setCredentials(user *User) {

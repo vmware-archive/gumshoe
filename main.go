@@ -27,7 +27,8 @@ func main() {
             Name:  "projects",
             Usage: "prints out a list of Tracker projects for your account",
             Action: func(c *cli.Context) {
-                client.Projects()
+                output := client.Projects()
+                fmt.Println(output)
             },
         },
     }

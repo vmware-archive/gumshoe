@@ -1,7 +1,6 @@
 package trackerapi_test
 
 import (
-    "io/ioutil"
     "net/http/httptest"
 
     . "github.com/pivotal/gumshoe/repos/ginkgo"
@@ -54,12 +53,11 @@ var _ = Describe("Client", func() {
             output := client.Me()
 
             printedOutput := output.String()
-            Expect(printedOutput).To(ContainSubstring("Username  : mister_tee"))
-            Expect(printedOutput).To(ContainSubstring("Name      : Mister Tee"))
-            Expect(printedOutput).To(ContainSubstring("Email     : mister_tee@pivotallabs.com"))
-            Expect(printedOutput).To(ContainSubstring("API Token : abcde90792f3898ab464cd3412345"))
-            Expect(printedOutput).To(ContainSubstring("Initials  : MT"))
-            Expect(printedOutput).To(ContainSubstring("Timezone  : America/Los_Angeles"))
+            Expect(printedOutput).To(ContainSubstring("Mister Tee (mister_tee)"))
+            Expect(printedOutput).To(ContainSubstring("  Email     : mister_tee@pivotallabs.com"))
+            Expect(printedOutput).To(ContainSubstring("  API Token : abcde90792f3898ab464cd3412345"))
+            Expect(printedOutput).To(ContainSubstring("  Initials  : MT"))
+            Expect(printedOutput).To(ContainSubstring("  Timezone  : America/Los_Angeles"))
         })
     })
 
@@ -85,16 +83,16 @@ var _ = Describe("Client", func() {
             })
         })
 
-        PIt("prints a representation of the user's projects to the screen", func() {
-            client.Projects()
+        It("prints a representation of the user's projects to the screen", func() {
+            output := client.Projects()
 
-            fileContents, _ := ioutil.ReadFile("/tmp/stdout")
-            Expect(string(fileContents)).To(ContainSubstring("Learn About the Force (98)"))
-            Expect(string(fileContents)).To(ContainSubstring("    Current Iteration : 1"))
+            printedOutput := output.String()
+            Expect(printedOutput).To(ContainSubstring("Learn About the Force (98)"))
+            Expect(printedOutput).To(ContainSubstring("  Current Iteration : 1"))
 
-            Expect(string(fileContents)).To(ContainSubstring("Death Star (99)"))
-            Expect(string(fileContents)).To(ContainSubstring("    Description       : Expeditionary Battle Planetoid"))
-            Expect(string(fileContents)).To(ContainSubstring("    Current Iteration : 15"))
+            Expect(printedOutput).To(ContainSubstring("Death Star (99)"))
+            Expect(printedOutput).To(ContainSubstring("  Description       : Expeditionary Battle Planetoid"))
+            Expect(printedOutput).To(ContainSubstring("  Current Iteration : 15"))
         })
     })
 })
