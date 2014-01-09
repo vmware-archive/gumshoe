@@ -5,9 +5,9 @@ import (
     "io/ioutil"
     "os"
 
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
     "github.com/pivotal/gumshoe/cmdutil"
-    . "github.com/pivotal/gumshoe/ginkgo"
-    . "github.com/pivotal/gumshoe/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 

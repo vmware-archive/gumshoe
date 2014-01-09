@@ -4,8 +4,8 @@ import (
     "io/ioutil"
     "os"
 
-    . "github.com/pivotal/gumshoe/ginkgo"
-    . "github.com/pivotal/gumshoe/gomega"
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 

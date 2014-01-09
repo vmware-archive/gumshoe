@@ -3,5 +3,8 @@ go:
   - 1.1
   - 1.2
   - tip
-install: git submodule update --init
-script: go test -v github.com/pivotal/gumshoe/trackerapi/
+install:
+  - go get github.com/onsi/ginkgo
+  - go get github.com/onsi/gomega
+  - go get github.com/codegangsta/cli
+script: go test -v ./...
