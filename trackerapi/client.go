@@ -33,77 +33,46 @@ func (c *Client) SetResolver(resolver *Resolver) {
 }
 
 func (c *Client) Me() fmt.Stringer {
-    var err error
-    c.user, err = c.setupUser()
-    handleError(err)
-
     structure := &MeResponseStructure{}
-    strategy := &APITokenStrategy{
-        APIToken: c.user.APIToken,
-    }
-
-    request := &Request{
-        url:            c.Resolver.MeRequestURL(),
-        authStrategy:   strategy,
-        responseStruct: structure,
-    }
-
-    err = request.Execute()
-    handleError(err)
-
+    c.executeRequest(structure, c.Resolver.MeRequestURL())
     return &MeOutput{
         user: structure,
     }
 }
 
 func (c *Client) Projects() fmt.Stringer {
-    var err error
-    c.user, err = c.setupUser()
-    handleError(err)
-
     structure := &[]ProjectResponseStructure{}
-
-    strategy := &APITokenStrategy{
-        APIToken: c.user.APIToken,
-    }
-
-    request := &Request{
-        url:            c.Resolver.ProjectsRequestURL(),
-        authStrategy:   strategy,
-        responseStruct: structure,
-    }
-
-    err = request.Execute()
-    handleError(err)
-
+    c.executeRequest(structure, c.Resolver.ProjectsRequestURL())
     return &ProjectsOutput{
         projects: structure,
     }
 }
 
 func (c *Client) Activity(projectID int) fmt.Stringer {
+    structure := &[]ActivityResponseStructure{}
+    c.executeRequest(structure, c.Resolver.ActivityRequestURL(projectID))
+    return &ActivitiesOutput{
+        activities: structure,
+    }
+}
+
+func (c *Client) executeRequest(structure interface{}, url string) {
     var err error
     c.user, err = c.setupUser()
     handleError(err)
-
-    structure := &[]ActivityResponseStructure{}
 
     strategy := &APITokenStrategy{
         APIToken: c.user.APIToken,
     }
 
     request := &Request{
-        url:            c.Resolver.ActivityRequestURL(projectID),
+        url:            url,
         authStrategy:   strategy,
         responseStruct: structure,
     }
 
     err = request.Execute()
     handleError(err)
-
-    return &ActivitiesOutput{
-        activities: structure,
-    }
 }
 
 func (c *Client) setCredentials(user *User) {
