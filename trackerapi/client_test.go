@@ -112,8 +112,9 @@ var _ = Describe("Client", func() {
             output := client.Activity(124)
 
             printedOutput := output.String()
-            Expect(printedOutput).To(ContainSubstring("Wilhuff Tarkin changed iteration 1's length from default to 2 weeks"))
-            Expect(printedOutput).To(ContainSubstring("Hey Girl, I'm just like coffee. I'll keep you up all night."))
+            Expect(printedOutput).To(ContainSubstring("Activity:\n"))
+            Expect(printedOutput).To(ContainSubstring("  Wilhuff Tarkin changed iteration 1's length from default to 2 weeks"))
+            Expect(printedOutput).To(ContainSubstring("  Hey Girl, I'm just like coffee. I'll keep you up all night."))
         })
     })
 })

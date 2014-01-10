@@ -61,7 +61,7 @@ func (o *ProjectOutput) String() string {
 
 func (o *ActivitiesOutput) String() string {
     activities := (*o.activities)
-    outputString := ""
+    outputString := "Activity:\n"
     for _, activity := range activities {
         activityOutput := &ActivityOutput{
             activity: &activity,
@@ -72,5 +72,5 @@ func (o *ActivitiesOutput) String() string {
 }
 
 func (o *ActivityOutput) String() string {
-    return o.activity.Message + "\n"
+    return fmt.Sprintf("  %s\n", o.activity.Message)
 }
