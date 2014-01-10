@@ -14,6 +14,14 @@ type ProjectOutput struct {
     project *ProjectResponseStructure
 }
 
+type ActivitiesOutput struct {
+    activities *[]ActivityResponseStructure
+}
+
+type ActivityOutput struct {
+    activity *ActivityResponseStructure
+}
+
 func (o *MeOutput) String() string {
     formatString := `
 %s (%s)
@@ -49,4 +57,20 @@ func (o *ProjectOutput) String() string {
         output += fmt.Sprintf(formatDesc, o.project.Description)
     }
     return output
+}
+
+func (o *ActivitiesOutput) String() string {
+    activities := (*o.activities)
+    outputString := ""
+    for _, activity := range activities {
+        activityOutput := &ActivityOutput{
+            activity: &activity,
+        }
+        outputString += activityOutput.String()
+    }
+    return outputString
+}
+
+func (o *ActivityOutput) String() string {
+    return o.activity.Message + "\n"
 }

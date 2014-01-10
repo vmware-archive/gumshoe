@@ -45,7 +45,7 @@ var _ = Describe("Client", func() {
 
             ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
             client.SetResolver(&trackerapi.Resolver{
-                MeRequestURL: ts.URL,
+                TrackerDomain: ts.URL,
             })
         })
 
@@ -79,7 +79,7 @@ var _ = Describe("Client", func() {
 
             ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
             client.SetResolver(&trackerapi.Resolver{
-                ProjectsRequestURL: ts.URL,
+                TrackerDomain: ts.URL,
             })
         })
 
@@ -93,6 +93,27 @@ var _ = Describe("Client", func() {
             Expect(printedOutput).To(ContainSubstring("Death Star (99)"))
             Expect(printedOutput).To(ContainSubstring("  Description       : Expeditionary Battle Planetoid"))
             Expect(printedOutput).To(ContainSubstring("  Current Iteration : 15"))
+        })
+    })
+
+    Describe("Activity", func() {
+        BeforeEach(func() {
+            json = `[
+                {"message": "Wilhuff Tarkin changed iteration 1's length from default to 2 weeks"},
+                {"message": "Hey Girl, I'm just like coffee. I'll keep you up all night."}
+            ]`
+            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            client.SetResolver(&trackerapi.Resolver{
+                TrackerDomain: ts.URL,
+            })
+        })
+
+        It("prints a representation of the user's projects to the screen", func() {
+            output := client.Activity(124)
+
+            printedOutput := output.String()
+            Expect(printedOutput).To(ContainSubstring("Wilhuff Tarkin changed iteration 1's length from default to 2 weeks"))
+            Expect(printedOutput).To(ContainSubstring("Hey Girl, I'm just like coffee. I'll keep you up all night."))
         })
     })
 })

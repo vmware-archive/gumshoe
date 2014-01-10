@@ -43,7 +43,7 @@ func (c *Client) Me() fmt.Stringer {
     }
 
     request := &Request{
-        url:            c.Resolver.MeRequestURL,
+        url:            c.Resolver.MeRequestURL(),
         authStrategy:   strategy,
         responseStruct: structure,
     }
@@ -62,12 +62,13 @@ func (c *Client) Projects() fmt.Stringer {
     handleError(err)
 
     structure := &[]ProjectResponseStructure{}
+
     strategy := &APITokenStrategy{
         APIToken: c.user.APIToken,
     }
 
     request := &Request{
-        url:            c.Resolver.ProjectsRequestURL,
+        url:            c.Resolver.ProjectsRequestURL(),
         authStrategy:   strategy,
         responseStruct: structure,
     }
@@ -77,6 +78,31 @@ func (c *Client) Projects() fmt.Stringer {
 
     return &ProjectsOutput{
         projects: structure,
+    }
+}
+
+func (c *Client) Activity(projectID int) fmt.Stringer {
+    var err error
+    c.user, err = c.setupUser()
+    handleError(err)
+
+    structure := &[]ActivityResponseStructure{}
+
+    strategy := &APITokenStrategy{
+        APIToken: c.user.APIToken,
+    }
+
+    request := &Request{
+        url:            c.Resolver.ActivityRequestURL(projectID),
+        authStrategy:   strategy,
+        responseStruct: structure,
+    }
+
+    err = request.Execute()
+    handleError(err)
+
+    return &ActivitiesOutput{
+        activities: structure,
     }
 }
 

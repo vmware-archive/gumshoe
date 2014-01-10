@@ -8,8 +8,9 @@ type APIAuthenticator struct {
 }
 
 func NewAPIAuthenticator() *APIAuthenticator {
+    resolver := &Resolver{}
     return &APIAuthenticator{
-        URL: AuthenticateURL,
+        URL: resolver.AuthenticateRequestURL(),
     }
 }
 

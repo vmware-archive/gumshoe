@@ -19,3 +19,7 @@ type ProjectResponseStructure struct {
     Description      string `json:"description"`
     CurrentIteration int    `json:"current_iteration_number"`
 }
+
+type ActivityResponseStructure struct {
+    Message string `json:"message"`
+}
