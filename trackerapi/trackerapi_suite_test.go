@@ -25,33 +25,71 @@ var errorJson string = `{
     "code":         "invalid_authentication"
 }`
 
-func testServer(username, password, token, json string) (ts *httptest.Server) {
-    ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Content-Type", "application/json")
-        headerToken := r.Header.Get("X-TrackerToken")
-        if username != "" && password != "" {
-            auth, err := parseBasicAuth(r)
-            if err != nil {
-                fmt.Fprintln(w, errorJson)
-            } else {
-                if auth[0] == username && auth[1] == password {
-                    fmt.Fprintln(w, json)
-                } else {
-                    fmt.Fprintln(w, errorJson)
-                }
-            }
-        } else {
-            if token == headerToken {
-                fmt.Fprintln(w, json)
-            } else {
-                fmt.Fprintln(w, errorJson)
-            }
-        }
-    }))
-    return
+type TestServer struct {
+    server    *httptest.Server
+    URL       string
+    username  string
+    password  string
+    apiToken  string
+    responses map[string]string
 }
 
-func parseBasicAuth(r *http.Request) ([]string, error) {
+func (s *TestServer) Boot() {
+    s.server = httptest.NewServer(s.buildHandler())
+    s.URL = s.server.URL
+    s.responses = make(map[string]string)
+}
+
+func (s *TestServer) Close() {
+    s.server.Close()
+}
+
+func (s *TestServer) SetResponse(path, json string) {
+    s.responses[path] = json
+}
+
+func (s *TestServer) GetResponse(path string) string {
+    response := s.responses[path]
+    if response == "" {
+        panic(path)
+    }
+    return response
+}
+
+func (s *TestServer) buildHandler() http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        if s.username != "" && s.password != "" {
+            s.handleBasicAuthRequest(w, r)
+        } else {
+            s.handleAPITokenRequest(w, r)
+        }
+    })
+}
+
+func (s *TestServer) handleBasicAuthRequest(w http.ResponseWriter, r *http.Request) {
+    auth, err := s.parseBasicAuth(r)
+    if err != nil {
+        fmt.Fprintln(w, errorJson)
+    } else {
+        if auth[0] == s.username && auth[1] == s.password {
+            fmt.Fprintln(w, s.GetResponse(r.URL.Path))
+        } else {
+            fmt.Fprintln(w, errorJson)
+        }
+    }
+}
+
+func (s *TestServer) handleAPITokenRequest(w http.ResponseWriter, r *http.Request) {
+    headerToken := r.Header.Get("X-TrackerToken")
+    if s.apiToken == headerToken {
+        fmt.Fprintln(w, s.GetResponse(r.URL.Path))
+    } else {
+        fmt.Fprintln(w, errorJson)
+    }
+}
+
+func (s *TestServer) parseBasicAuth(r *http.Request) ([]string, error) {
     auth := r.Header["Authorization"]
     if auth != nil {
         var header string = auth[0]

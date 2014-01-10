@@ -1,8 +1,6 @@
 package trackerapi_test
 
 import (
-    "net/http/httptest"
-
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
@@ -12,7 +10,7 @@ var _ = Describe("Client", func() {
     var (
         json   string
         client *trackerapi.Client
-        ts     *httptest.Server
+        ts     *TestServer
     )
 
     BeforeEach(func() {
@@ -43,7 +41,11 @@ var _ = Describe("Client", func() {
                 }
             }`
 
-            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            ts = &TestServer{
+                apiToken: "abcde90792f3898ab464cd3412345",
+            }
+            ts.Boot()
+            ts.SetResponse("/me", json)
             client.SetResolver(&trackerapi.Resolver{
                 TrackerDomain: ts.URL,
             })
@@ -77,7 +79,11 @@ var _ = Describe("Client", func() {
                }
             ]`
 
-            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            ts = &TestServer{
+                apiToken: "abcde90792f3898ab464cd3412345",
+            }
+            ts.Boot()
+            ts.SetResponse("/projects", json)
             client.SetResolver(&trackerapi.Resolver{
                 TrackerDomain: ts.URL,
             })
@@ -102,7 +108,11 @@ var _ = Describe("Client", func() {
                 {"message": "Wilhuff Tarkin changed iteration 1's length from default to 2 weeks"},
                 {"message": "Hey Girl, I'm just like coffee. I'll keep you up all night."}
             ]`
-            ts = testServer("", "", "abcde90792f3898ab464cd3412345", json)
+            ts = &TestServer{
+                apiToken: "abcde90792f3898ab464cd3412345",
+            }
+            ts.Boot()
+            ts.SetResponse("/projects/124/activity", json)
             client.SetResolver(&trackerapi.Resolver{
                 TrackerDomain: ts.URL,
             })

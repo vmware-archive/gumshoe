@@ -3,14 +3,13 @@ package trackerapi
 import "errors"
 
 type APIAuthenticator struct {
-    URL  string
-    user *User
+    Resolver *Resolver
+    user     *User
 }
 
 func NewAPIAuthenticator() *APIAuthenticator {
-    resolver := NewDefaultResolver()
     return &APIAuthenticator{
-        URL: resolver.AuthenticateRequestURL(),
+        Resolver: NewDefaultResolver(),
     }
 }
 
@@ -27,7 +26,7 @@ func (a *APIAuthenticator) Authenticate(u *User) (string, error) {
     }
 
     request := &Request{
-        url:            a.URL,
+        url:            a.Resolver.AuthenticateRequestURL(),
         authStrategy:   strategy,
         responseStruct: structure,
     }

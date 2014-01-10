@@ -5,9 +5,9 @@ import (
     "io/ioutil"
     "os"
 
+    "github.com/pivotal/gumshoe/cmdutil"
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
-    "github.com/pivotal/gumshoe/cmdutil"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 
@@ -17,6 +17,7 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
         user *trackerapi.User
         auth *trackerapi.APIAuthenticator
         json string
+        ts   *TestServer
     )
 
     BeforeEach(func() {
@@ -25,7 +26,8 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
             Password: "sekret",
         }
 
-        auth = &trackerapi.APIAuthenticator{}
+        auth = trackerapi.NewAPIAuthenticator()
+
         json = `{
             "api_token": "abcde90792f3898ab464cd3412345",
             "name": "Mister Tee",
@@ -41,8 +43,13 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
             }
         }`
 
-        ts := testServer("mister_tee", "sekret", "", json)
-        auth.URL = ts.URL
+        ts = &TestServer{
+            username: "mister_tee",
+            password: "sekret",
+        }
+        ts.Boot()
+        ts.SetResponse("/me", json)
+        auth.Resolver.TrackerDomain = ts.URL
         cmdutil.InputFile, _ = os.Create("/tmp/stdin")
         cmdutil.InputBuffer = nil
         ioutil.WriteFile("/tmp/stdin", []byte("mister_tee\nsekret\n"), 0644)
