@@ -2,10 +2,6 @@ package trackerapi_test
 
 import (
     "fmt"
-    "io/ioutil"
-    "os"
-
-    "github.com/pivotal/gumshoe/cmdutil"
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
@@ -50,13 +46,6 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
         ts.Boot()
         ts.SetResponse("/me", json)
         auth.Resolver.TrackerDomain = ts.URL
-        cmdutil.InputFile, _ = os.Create("/tmp/stdin")
-        cmdutil.InputBuffer = nil
-        ioutil.WriteFile("/tmp/stdin", []byte("mister_tee\nsekret\n"), 0644)
-    })
-
-    AfterEach(func() {
-        os.Remove("/tmp/stdin")
     })
 
     It("makes a request to the tracker api, prompting the user for their creds, and returning the api token", func() {
