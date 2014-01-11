@@ -72,9 +72,9 @@ func (t *Terminal) Prompt(prompt string, silent bool) string {
         cmdutil.Silence()
     }
     fmt.Print(prompt)
-
+    input := cmdutil.ReadLine()
     if silent {
         cmdutil.Unsilence()
     }
-    return cmdutil.ReadLine()
+    return input
 }
