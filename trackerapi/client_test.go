@@ -14,9 +14,9 @@ var _ = Describe("Client", func() {
     )
 
     BeforeEach(func() {
-        client = trackerapi.NewClient()
         store := trackerapi.NewStore()
         store.Set("APIToken", "abcde90792f3898ab464cd3412345")
+        client, _ = trackerapi.NewClient()
     })
 
     AfterEach(func() {
