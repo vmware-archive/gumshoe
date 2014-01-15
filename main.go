@@ -5,8 +5,8 @@ import (
     "os"
     "strconv"
 
-    "github.com/pivotal/gumshoe/cmdutil"
     "github.com/pivotal/gumshoe/repos/cli"
+    "github.com/pivotal/gumshoe/term"
     "github.com/pivotal/gumshoe/trackerapi"
 )
 
@@ -19,13 +19,13 @@ func main() {
     if err != nil {
         panic(err)
     }
-    term := &Terminal{}
+    terminal := term.New()
     app.Commands = []cli.Command{
         {
             Name:  "me",
             Usage: "prints out Tracker's representation of your account",
             Action: func(c *cli.Context) {
-                handleAuthentication(client, term)
+                handleAuthentication(client, terminal)
                 output := client.Me()
                 fmt.Println(output)
             },
@@ -34,7 +34,7 @@ func main() {
             Name:  "projects",
             Usage: "prints out a list of Tracker projects for your account",
             Action: func(c *cli.Context) {
-                handleAuthentication(client, term)
+                handleAuthentication(client, terminal)
                 output := client.Projects()
                 fmt.Println(output)
             },
@@ -47,7 +47,7 @@ func main() {
                 if err != nil {
                     panic(err)
                 }
-                handleAuthentication(client, term)
+                handleAuthentication(client, terminal)
                 output := client.Activity(projectID)
                 fmt.Println(output)
             },
@@ -57,24 +57,10 @@ func main() {
     app.Run(os.Args)
 }
 
-func handleAuthentication(client *trackerapi.Client, term *Terminal) {
+func handleAuthentication(client *trackerapi.Client, terminal *term.Terminal) {
     if !client.IsAuthenticated() {
-        username := term.Prompt("Username: ", false)
-        password := term.Prompt("Password: ", true)
+        username := terminal.Prompt("Username: ", false)
+        password := terminal.Prompt("Password: ", true)
         client.Authenticate(username, password)
     }
-}
-
-type Terminal struct{}
-
-func (t *Terminal) Prompt(prompt string, silent bool) string {
-    if silent {
-        cmdutil.Silence()
-    }
-    fmt.Print(prompt)
-    input := cmdutil.ReadLine()
-    if silent {
-        cmdutil.Unsilence()
-    }
-    return input
 }
