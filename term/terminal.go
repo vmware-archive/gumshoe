@@ -8,6 +8,11 @@ import (
     "strings"
 )
 
+const (
+    EnableEcho  = iota
+    DisableEcho = iota
+)
+
 type Terminal struct {
     InputFile   *os.File
     InputBuffer *bufio.Reader
@@ -19,13 +24,13 @@ func New() *Terminal {
     }
 }
 
-func (t *Terminal) Prompt(prompt string, silent bool) string {
-    if silent {
+func (t *Terminal) Prompt(prompt string, echo int) string {
+    if echo == DisableEcho {
         t.DisableEcho()
     }
     fmt.Print(prompt)
     input := t.ReadLine()
-    if silent {
+    if echo == DisableEcho {
         t.EnableEcho()
     }
     return input

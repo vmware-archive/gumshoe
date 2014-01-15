@@ -59,8 +59,8 @@ func main() {
 
 func handleAuthentication(client *trackerapi.Client, terminal *term.Terminal) {
     if !client.IsAuthenticated() {
-        username := terminal.Prompt("Username: ", false)
-        password := terminal.Prompt("Password: ", true)
+        username := terminal.Prompt("Username: ", term.EnableEcho)
+        password := terminal.Prompt("Password: ", term.DisableEcho)
         client.Authenticate(username, password)
     }
 }
