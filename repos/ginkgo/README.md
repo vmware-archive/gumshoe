@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/onsi/ginkgo.png)](https://travis-ci.org/onsi/ginkgo)
 
-Jump to the [docs](http://onsi.github.io/ginkgo/) to learn more.  To start rolling your Ginkgo tests *now* [keep reading](#set_me_up)!
+Jump to the [docs](http://onsi.github.io/ginkgo/) to learn more.  To start rolling your Ginkgo tests *now* [keep reading](#set-me-up)!
 
 ## Feature List
 
@@ -24,7 +24,13 @@ Jump to the [docs](http://onsi.github.io/ginkgo/) to learn more.  To start rolli
 
 - Built-in support for [benchmarking](http://onsi.github.io/ginkgo/#benchmark_tests) your code.  Control the number of benchmark samples as you gather runtimes and other, arbitrary, bits of numerical information about your code. 
 
-- `ginkgo`: a command line interface with plenty of handy command line arguments for [running your tests](http://onsi.github.io/ginkgo/#running_tests) and [generating](http://onsi.github.io/ginkgo/#generators) test files.
+- `ginkgo`: a command line interface with plenty of handy command line arguments for [running your tests](http://onsi.github.io/ginkgo/#running_tests) and [generating](http://onsi.github.io/ginkgo/#generators) test files.  Here are a few choice examples:
+    - `ginkgo -cover` will run your tests using Golang's code coverage tool
+    - `ginkgo -focus="REGEXP"` and `ginkgo -skip="REGEXP"` allow you to specify a subset of tests to run via regular expression
+    - `ginkgo -nodes=N` runs your tests in `N` parallel processes
+    - `ginkgo -r` runs all tests suites under the current directory
+    - `ginkgo -v` prints ou identifying information for each tests just before it runs
+    - `ginkgo -watch` watches packages for changes, then reruns tests
 
     The `ginkgo` CLI is convenient, but purely optional -- Ginkgo works just fine with `go test`
 
@@ -56,6 +62,41 @@ ginkgo  # also runs your tests
 
 ```
 
+## I'm new to Go: What are my testing options?
+
+Of course, I heartily recommend [Ginkgo](https://github.com/onsi/ginkgo) and [Gomega](https://github.com/onsi/gomega).  Both packages are seeing heavy, daily, production use on a number of projects and boast a mature and comprehensive feature-set.
+
+With that said, it's great to know what your options are :)
+
+### What Golang gives you out of the box
+
+Testing is a first class citizen in Golang, however Go's built-in testing primitives are somewhat limited: The [testing](http://golang.org/pkg/testing) package provides basic XUnit style tests and no assertion library.
+
+### Matcher libraries for Golang's XUnit style tests
+
+A number of matcher libraries have been written to augment Go's built-in XUnit style tests.  Here are two that have gained traction:
+
+- [testify](https://github.com/stretchr/testify)
+- [gocheck](http://labix.org/gocheck)
+
+You can also use Ginkgo's matcher library [Gomega](https://github.com/onsi/gomega) in [XUnit style tests](http://onsi.github.io/gomega/#using_gomega_with_golangs_xunitstyle_tests)
+
+### BDD style testing frameworks
+
+There are a handful of BDD-style testing frameworks written for Golang.  Here are a few:
+
+- [Ginkgo](https://github.com/onsi/ginkgo) ;)
+- [GoConvey](https://github.com/smartystreets/goconvey) 
+- [Goblin](https://github.com/franela/goblin)
+- [Mao](https://github.com/azer/mao)
+- [Zen](https://github.com/pranavraja/zen)
+
+Finally, @shageman has [put together](https://github.com/shageman/gotestit) a comprehensive comparison of golang testing libraries.
+
+Go explore!
+
 ## License
 
 Ginkgo is MIT-Licensed
+
+`ginkgo -watch` uses [fsnotify](https://github.com/howeyc/fsnotify) which is embedded in the source to simplify distribution.  fsnotify has a BSD-style license.  This dependency will be removed when fsnotify is added to Golang's standard library in v1.3
