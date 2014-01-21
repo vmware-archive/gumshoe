@@ -19,6 +19,24 @@ To run tests in particular packages:
 
 	ginkgo <flags> /path/to/package /path/to/another/package
 
+To monitor packages and rerun tests when changes occur:
+
+	ginkgo -watch <-r> </path/to/package>
+
+passing `ginkgo -watch` the `-r` flag will recursively detect all test suites under the current directory and monitor them.
+`-watch` does not detect *new* packages. Moreover, changes in package X only rerun the tests for package X, tests for packages
+that depend on X are not rerun.
+
+To run tests in parallel
+
+	ginkgo -nodes=N
+
+where N is the number of nodes.  By default the Ginkgo CLI will spin up a server that the individual
+test processes stream test output to.  The CLI then aggregates these streams into one coherent stream of output.
+An alternative is to have the parallel nodes run and then present the resulting, final, output in one monolithic chunk - you can opt into this if streaming is giving you trouble:
+
+	ginkgo -nodes=N -stream=false
+
 To bootstrap a test suite:
 
 	ginkgo bootstrap
@@ -45,24 +63,29 @@ import (
 	"flag"
 	"fmt"
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/ginkgo/testsuite"
 	"os"
 	"time"
 )
 
 var numCPU int
+var parallelStream bool
 var recurse bool
 var runMagicI bool
 var race bool
 var cover bool
+var watch bool
 
 func init() {
 	config.Flags("", false)
 
 	flag.IntVar(&(numCPU), "nodes", 1, "The number of parallel test nodes to run")
+	flag.BoolVar(&(parallelStream), "stream", true, "Aggregate parallel test output into one coherent stream (default: true)")
 	flag.BoolVar(&(recurse), "r", false, "Find and run test suites under the current directory recursively")
 	flag.BoolVar(&(runMagicI), "i", false, "Run go test -i first, then run the test suite")
 	flag.BoolVar(&(race), "race", false, "Run tests with race detection enabled")
 	flag.BoolVar(&(cover), "cover", false, "Run tests with coverage analysis, will generate coverage profiles with the package name in the current directory")
+	flag.BoolVar(&(watch), "watch", false, "Monitor the target packages for changes, then run tests when changes are detected")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of ginkgo:\n\n")
@@ -88,7 +111,11 @@ func main() {
 		}
 	}
 
-	runTests()
+	if watch {
+		watchTests()
+	} else {
+		runTests()
+	}
 }
 
 func handleSubcommands(args []string) bool {
@@ -114,17 +141,15 @@ func handleSubcommands(args []string) bool {
 	return true
 }
 
-func runTests() {
-	t := time.Now()
-
-	suites := []testSuite{}
+func findSuites() []*testsuite.TestSuite {
+	suites := []*testsuite.TestSuite{}
 
 	if flag.NArg() > 0 {
 		for _, dir := range flag.Args() {
-			suites = append(suites, suitesInDir(dir, recurse)...)
+			suites = append(suites, testsuite.SuitesInDir(dir, recurse)...)
 		}
 	} else {
-		suites = suitesInDir(".", recurse)
+		suites = testsuite.SuitesInDir(".", recurse)
 	}
 
 	if len(suites) == 0 {
@@ -132,7 +157,15 @@ func runTests() {
 		os.Exit(1)
 	}
 
-	runner := newTestRunner(numCPU, runMagicI, race, cover)
+	return suites
+}
+
+func runTests() {
+	t := time.Now()
+
+	suites := findSuites()
+
+	runner := newTestRunner(numCPU, parallelStream, runMagicI, race, cover)
 	passed := runner.run(suites)
 	fmt.Printf("\nGinkgo ran in %s\n", time.Since(t))
 
@@ -142,5 +175,21 @@ func runTests() {
 	} else {
 		fmt.Printf("Test Suite Failed\n")
 		os.Exit(1)
+	}
+}
+
+func watchTests() {
+	suites := findSuites()
+
+	runner := newTestRunner(numCPU, parallelStream, runMagicI, race, cover)
+	modifiedSuite := make(chan *testsuite.TestSuite)
+	for _, suite := range suites {
+		go suite.Watch(modifiedSuite)
+	}
+
+	for {
+		suite := <-modifiedSuite
+		fmt.Printf("\n\nDetected change in %s\n\n", suite.PackageName)
+		runner.runSuite(suite)
 	}
 }
