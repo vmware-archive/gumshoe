@@ -3,6 +3,7 @@ go:
   - 1.1
   - 1.2
   - tip
+install: echo 'Hello'
 notifications:
   webhooks: http://pulse.pivotallabs.com/projects/01fd881a-9499-408a-829b-bea3626dcf99/status
 script: go test -v ./trackerapi/
