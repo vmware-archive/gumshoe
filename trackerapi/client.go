@@ -2,12 +2,9 @@ package trackerapi
 
 import (
     "fmt"
-    "log"
-    "os"
 )
 
 type Client struct {
-    Logger   *log.Logger
     Resolver *Resolver
     user     *User
     store    *Store
@@ -21,7 +18,6 @@ func NewClient() (*Client, error) {
     }
 
     c := Client{
-        Logger:   NewLogger(os.Stdout),
         Resolver: NewDefaultResolver(),
         store:    store,
         user: &User{
@@ -31,10 +27,6 @@ func NewClient() (*Client, error) {
     }
 
     return &c, nil
-}
-
-func (c *Client) SetLogger(logger *log.Logger) {
-    c.Logger = logger
 }
 
 func (c *Client) SetResolver(resolver *Resolver) {
