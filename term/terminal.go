@@ -2,7 +2,6 @@ package term
 
 import (
     "bufio"
-    "fmt"
     "os"
     "os/exec"
     "strings"
@@ -16,19 +15,29 @@ const (
 type Terminal struct {
     InputFile   *os.File
     InputBuffer *bufio.Reader
+    OutputFile  *os.File
 }
 
 func New() *Terminal {
     return &Terminal{
-        InputFile: os.Stdin,
+        InputFile:  os.Stdin,
+        OutputFile: os.Stdout,
     }
+}
+
+func (t *Terminal) SetInput(input *os.File) {
+    t.InputFile = input
+}
+
+func (t *Terminal) SetOutput(output *os.File) {
+    t.OutputFile = output
 }
 
 func (t *Terminal) Prompt(prompt string, echo int) string {
     if echo == DisableEcho {
         t.DisableEcho()
     }
-    fmt.Print(prompt)
+    t.OutputFile.WriteString(prompt)
     input := t.ReadLine()
     if echo == DisableEcho {
         t.EnableEcho()
@@ -48,7 +57,7 @@ func (t *Terminal) ReadLine() string {
     buf := t.buffer()
     line, err := buf.ReadString('\n')
     if err != nil {
-        fmt.Println(err)
+        t.OutputFile.WriteString(err.Error())
     }
     return strings.TrimSpace(string(line))
 }
