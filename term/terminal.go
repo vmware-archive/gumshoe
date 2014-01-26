@@ -35,25 +35,25 @@ func (t *Terminal) SetOutput(output *os.File) {
 
 func (t *Terminal) Prompt(prompt string, echo int) string {
     if echo == DisableEcho {
-        t.DisableEcho()
+        t.disableEcho()
     }
     t.OutputFile.WriteString(prompt)
-    input := t.ReadLine()
+    input := t.readLine()
     if echo == DisableEcho {
-        t.EnableEcho()
+        t.enableEcho()
     }
     return input
 }
 
-func (t *Terminal) DisableEcho() {
+func (t *Terminal) disableEcho() {
     t.run(exec.Command("stty", "-echo"))
 }
 
-func (t *Terminal) EnableEcho() {
+func (t *Terminal) enableEcho() {
     t.run(exec.Command("stty", "echo"))
 }
 
-func (t *Terminal) ReadLine() string {
+func (t *Terminal) readLine() string {
     buf := t.buffer()
     line, err := buf.ReadString('\n')
     if err != nil {
