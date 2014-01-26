@@ -14,7 +14,7 @@ const (
 
 type Terminal struct {
     InputFile   *os.File
-    InputBuffer *bufio.Reader
+    inputBuffer *bufio.Reader
     OutputFile  *os.File
 }
 
@@ -63,14 +63,14 @@ func (t *Terminal) ReadLine() string {
 }
 
 func (t *Terminal) run(command *exec.Cmd) {
-    command.Stdin = os.Stdin
-    command.Stdout = os.Stdout
+    command.Stdin = t.InputFile
+    command.Stdout = t.OutputFile
     command.Run()
 }
 
 func (t *Terminal) buffer() *bufio.Reader {
-    if t.InputBuffer == nil {
-        t.InputBuffer = bufio.NewReader(t.InputFile)
+    if t.inputBuffer == nil {
+        t.inputBuffer = bufio.NewReader(t.InputFile)
     }
-    return t.InputBuffer
+    return t.inputBuffer
 }
