@@ -5,19 +5,19 @@ import (
     "net/http"
 )
 
-type Request struct {
+type Requester struct {
     url          string
     authStrategy RequestAuthStrategy
 }
 
-func NewRequest(url string, authStrategy RequestAuthStrategy) Request {
-    return Request{
+func NewRequester(url string, authStrategy RequestAuthStrategy) Requester {
+    return Requester{
         url:          url,
         authStrategy: authStrategy,
     }
 }
 
-func (r *Request) Execute() ([]byte, error) {
+func (r *Requester) Execute() ([]byte, error) {
     httpClient := &http.Client{}
     req, err := http.NewRequest("GET", r.url, nil)
     if err != nil {

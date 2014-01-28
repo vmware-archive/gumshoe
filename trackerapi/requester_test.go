@@ -56,8 +56,8 @@ var _ = Describe("Request#Execute", func() {
         strategy := &trackerapi.APITokenStrategy{
             APIToken: token,
         }
-        request := trackerapi.NewRequest(resolver.MeRequestURL(), strategy)
-        responseBody, _ := request.Execute()
+        requester := trackerapi.NewRequester(resolver.MeRequestURL(), strategy)
+        responseBody, _ := requester.Execute()
         actual := strings.TrimSpace(string(responseBody))
         Expect(actual).To(Equal(json))
     })

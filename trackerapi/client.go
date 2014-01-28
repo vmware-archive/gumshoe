@@ -62,15 +62,9 @@ func (c *Client) executeRequest(structure interface{}, url string) {
     strategy := &APITokenStrategy{
         APIToken: c.user.APIToken,
     }
-
-    request := &Request{
-        url:          url,
-        authStrategy: strategy,
-    }
-
-    responseBody, err := request.Execute()
+    requester := NewRequester(url, strategy)
+    responseBody, err := requester.Execute()
     handleError(err)
-
     err = json.Unmarshal(responseBody, &structure)
     handleError(err)
 }

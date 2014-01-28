@@ -27,13 +27,8 @@ func (a *APIAuthenticator) Authenticate(u *User) (string, error) {
         Username: a.user.Username,
         Password: a.user.Password,
     }
-
-    request := &Request{
-        url:          a.Resolver.AuthenticateRequestURL(),
-        authStrategy: strategy,
-    }
-
-    responseBody, err := request.Execute()
+    requester := NewRequester(a.Resolver.AuthenticateRequestURL(), strategy)
+    responseBody, err := requester.Execute()
     handleError(err)
 
     err = json.Unmarshal(responseBody, &structure)
