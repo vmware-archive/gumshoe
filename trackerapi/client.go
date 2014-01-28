@@ -1,6 +1,7 @@
 package trackerapi
 
 import (
+    "encoding/json"
     "fmt"
 )
 
@@ -63,12 +64,14 @@ func (c *Client) executeRequest(structure interface{}, url string) {
     }
 
     request := &Request{
-        url:            url,
-        authStrategy:   strategy,
-        responseStruct: structure,
+        url:          url,
+        authStrategy: strategy,
     }
 
-    err := request.Execute()
+    responseBody, err := request.Execute()
+    handleError(err)
+
+    err = json.Unmarshal(responseBody, &structure)
     handleError(err)
 }
 

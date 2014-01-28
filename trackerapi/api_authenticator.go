@@ -1,6 +1,9 @@
 package trackerapi
 
-import "errors"
+import (
+    "encoding/json"
+    "errors"
+)
 
 type APIAuthenticator struct {
     Resolver *Resolver
@@ -26,12 +29,16 @@ func (a *APIAuthenticator) Authenticate(u *User) (string, error) {
     }
 
     request := &Request{
-        url:            a.Resolver.AuthenticateRequestURL(),
-        authStrategy:   strategy,
-        responseStruct: structure,
+        url:          a.Resolver.AuthenticateRequestURL(),
+        authStrategy: strategy,
     }
 
-    err := request.Execute()
+    responseBody, err := request.Execute()
     handleError(err)
+
+    err = json.Unmarshal(responseBody, &structure)
+    if err != nil {
+        return "", err
+    }
     return structure.APIToken, nil
 }
