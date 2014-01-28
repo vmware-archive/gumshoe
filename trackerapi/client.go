@@ -36,7 +36,7 @@ func (c *Client) SetResolver(resolver *Resolver) {
 func (c *Client) Me() fmt.Stringer {
     structure := &MeResponseStructure{}
     c.executeRequest(structure, c.Resolver.MeRequestURL())
-    return &MeOutput{
+    return &OutputForMeCommand{
         user: structure,
     }
 }
@@ -44,7 +44,7 @@ func (c *Client) Me() fmt.Stringer {
 func (c *Client) Projects() fmt.Stringer {
     structure := &[]ProjectResponseStructure{}
     c.executeRequest(structure, c.Resolver.ProjectsRequestURL())
-    return &ProjectsOutput{
+    return &OutputForProjectsCommand{
         projects: structure,
     }
 }
@@ -52,7 +52,7 @@ func (c *Client) Projects() fmt.Stringer {
 func (c *Client) Activity(projectID int) fmt.Stringer {
     structure := &[]ActivityResponseStructure{}
     c.executeRequest(structure, c.Resolver.ActivityRequestURL(projectID))
-    return &ActivitiesOutput{
+    return &OutputForActivitiesCommand{
         activities: structure,
     }
 }
