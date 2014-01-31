@@ -15,10 +15,10 @@ func (fa *FakeAuthenticator) Authenticate(user *domain.User) (string, error) {
 }
 
 var _ = Describe("User", func() {
-    var u *domain.User
+    var u domain.User
 
     BeforeEach(func() {
-        u = &domain.User{}
+        u = domain.User{}
         u.SetAuthenticator(&FakeAuthenticator{APIToken: "abcde12345"})
     })
 
