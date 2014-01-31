@@ -5,19 +5,20 @@ import (
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
+    "github.com/pivotal/gumshoe/trackerapi/domain"
 )
 
 var _ = Describe("APIAuthenticator #Authenticate", func() {
 
     var (
-        user *trackerapi.User
+        user *domain.User
         auth *trackerapi.APIAuthenticator
         json string
         ts   *TestServer
     )
 
     BeforeEach(func() {
-        user = &trackerapi.User{
+        user = &domain.User{
             Username: "mister_tee",
             Password: "sekret",
         }
@@ -54,7 +55,7 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
     })
 
     It("requires a user with a username and password", func() {
-        _, err := auth.Authenticate(&trackerapi.User{})
-        Expect(fmt.Sprint(err)).To(Equal("Given trackerapi.User does not have Username and Password"))
+        _, err := auth.Authenticate(&domain.User{})
+        Expect(fmt.Sprint(err)).To(Equal("Given domain.User does not have Username and Password"))
     })
 })

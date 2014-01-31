@@ -3,11 +3,13 @@ package trackerapi
 import (
     "encoding/json"
     "errors"
+
+    "github.com/pivotal/gumshoe/trackerapi/domain"
 )
 
 type APIAuthenticator struct {
     Resolver *Resolver
-    user     *User
+    user     *domain.User
 }
 
 func NewAPIAuthenticator() *APIAuthenticator {
@@ -16,10 +18,10 @@ func NewAPIAuthenticator() *APIAuthenticator {
     }
 }
 
-func (a *APIAuthenticator) Authenticate(u *User) (string, error) {
+func (a *APIAuthenticator) Authenticate(u *domain.User) (string, error) {
     a.user = u
     if !a.user.HasCredentials() {
-        return "", errors.New("Given trackerapi.User does not have Username and Password")
+        return "", errors.New("Given domain.User does not have Username and Password")
     }
 
     structure := &MeResponseStructure{}

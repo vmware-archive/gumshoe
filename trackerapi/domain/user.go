@@ -1,4 +1,4 @@
-package trackerapi
+package domain
 
 type Authenticator interface {
     Authenticate(*User) (string, error)

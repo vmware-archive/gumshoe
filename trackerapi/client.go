@@ -3,11 +3,13 @@ package trackerapi
 import (
     "encoding/json"
     "fmt"
+
+    "github.com/pivotal/gumshoe/trackerapi/domain"
 )
 
 type Client struct {
     Resolver *Resolver
-    user     *User
+    user     *domain.User
     store    *Store
 }
 
@@ -18,13 +20,14 @@ func NewClient() (*Client, error) {
         return nil, err
     }
 
+    user := &domain.User{
+        APIToken: token,
+    }
+    user.SetAuthenticator(NewAPIAuthenticator())
     c := Client{
         Resolver: NewDefaultResolver(),
         store:    store,
-        user: &User{
-            APIToken:      token,
-            authenticator: NewAPIAuthenticator(),
-        },
+        user:     user,
     }
 
     return &c, nil

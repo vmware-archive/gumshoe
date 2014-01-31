@@ -1,24 +1,24 @@
-package trackerapi_test
+package domain_test
 
 import (
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
-    "github.com/pivotal/gumshoe/trackerapi"
+    "github.com/pivotal/gumshoe/trackerapi/domain"
 )
 
 type FakeAuthenticator struct {
     APIToken string
 }
 
-func (fa *FakeAuthenticator) Authenticate(user *trackerapi.User) (string, error) {
+func (fa *FakeAuthenticator) Authenticate(user *domain.User) (string, error) {
     return fa.APIToken, nil
 }
 
 var _ = Describe("User", func() {
-    var u *trackerapi.User
+    var u *domain.User
 
     BeforeEach(func() {
-        u = &trackerapi.User{}
+        u = &domain.User{}
         u.SetAuthenticator(&FakeAuthenticator{APIToken: "abcde12345"})
     })
 
