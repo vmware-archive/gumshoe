@@ -1,3 +1,10 @@
-set -e
+STATE="NO GOOD"
 
 go test -v ./trackerapi ./trackerapi/domain ./term
+
+if [[ $? = 0 ]] ; then
+    STATE="ALL GOOD"
+fi
+
+echo
+echo "$STATE BASSI!"
