@@ -1,10 +1,14 @@
-STATE="NO GOOD"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NONE="\033[0m"
 
 go test -v ./trackerapi ./trackerapi/domain ./term
 
 if [[ $? = 0 ]] ; then
-    STATE="ALL GOOD"
+    STATE="${GREEN}ALL GOOD BASSI!${NONE}"
+else
+    STATE="${RED}NO GOOD BASSI!${NONE}"
 fi
 
 echo
-echo "$STATE BASSI!"
+echo -e $STATE
