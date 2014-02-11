@@ -1,5 +1,7 @@
 package trackerapi
 
+import "github.com/pivotal/gumshoe/trackerapi/domain"
+
 type MeResponseStructure struct {
     APIToken string `json:"api_token"`
     Username string `json:"username"`
@@ -7,10 +9,19 @@ type MeResponseStructure struct {
     Email    string `json:"email"`
     Initials string `json:"initials"`
     Timezone struct {
-        Kind      string `json:"kind"`
-        Offset    string `json:"offset"`
         OlsonName string `json:"olson_name"`
     }   `json:"time_zone"`
+}
+
+func (s MeResponseStructure) User() domain.User {
+    return domain.User{
+        Name:     s.Name,
+        Username: s.Username,
+        APIToken: s.APIToken,
+        Email:    s.Email,
+        Initials: s.Initials,
+        Timezone: s.Timezone.OlsonName,
+    }
 }
 
 type ProjectResponseStructure struct {

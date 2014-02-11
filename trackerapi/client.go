@@ -5,6 +5,7 @@ import (
     "fmt"
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
+    "github.com/pivotal/gumshoe/trackerapi/presenters"
 )
 
 type Client struct {
@@ -38,11 +39,9 @@ func (c *Client) SetResolver(resolver *Resolver) {
 }
 
 func (c *Client) Me() fmt.Stringer {
-    structure := &MeResponseStructure{}
-    c.executeRequest(structure, c.Resolver.MeRequestURL())
-    return &OutputForMeCommand{
-        user: structure,
-    }
+    response := &MeResponseStructure{}
+    c.executeRequest(response, c.Resolver.MeRequestURL())
+    return presenters.User{response.User()}
 }
 
 func (c *Client) Projects() fmt.Stringer {
