@@ -4,5 +4,5 @@ type Project struct {
     ID               int
     Name             string
     Description      string
-    CurrentIteration string
+    CurrentIteration int
 }
