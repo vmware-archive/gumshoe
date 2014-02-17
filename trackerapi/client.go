@@ -6,6 +6,7 @@ import (
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
     "github.com/pivotal/gumshoe/trackerapi/presenters"
+    "github.com/pivotal/gumshoe/trackerapi/responses"
 )
 
 type Client struct {
@@ -39,23 +40,21 @@ func (c *Client) SetResolver(resolver *Resolver) {
 }
 
 func (c *Client) Me() fmt.Stringer {
-    response := MeResponse{}
+    response := responses.Me{}
     c.executeRequest(&response.Structure, c.Resolver.MeRequestURL())
     return presenters.User{response.User()}
 }
 
 func (c *Client) Projects() fmt.Stringer {
-    response := ProjectsResponse{}
+    response := responses.Projects{}
     c.executeRequest(&response.Structure, c.Resolver.ProjectsRequestURL())
     return presenters.Projects{response.Projects()}
 }
 
 func (c *Client) Activity(projectID int) fmt.Stringer {
-    structure := &[]ActivityResponseStructure{}
-    c.executeRequest(structure, c.Resolver.ActivityRequestURL(projectID))
-    return &OutputForActivitiesCommand{
-        activities: structure,
-    }
+    response := responses.Activities{}
+    c.executeRequest(&response.Structure, c.Resolver.ActivityRequestURL(projectID))
+    return presenters.Activities{response.Activities()}
 }
 
 func (c *Client) executeRequest(structure interface{}, url string) {

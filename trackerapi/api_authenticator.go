@@ -5,6 +5,7 @@ import (
     "errors"
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
+    "github.com/pivotal/gumshoe/trackerapi/responses"
 )
 
 type APIAuthenticator struct {
@@ -24,7 +25,7 @@ func (a *APIAuthenticator) Authenticate(u *domain.User) (string, error) {
         return "", errors.New("Given domain.User does not have Username and Password")
     }
 
-    structure := &MeResponseStructure{}
+    response := responses.Me{}
     strategy := &BasicAuthStrategy{
         Username: a.user.Username,
         Password: a.user.Password,
@@ -33,9 +34,9 @@ func (a *APIAuthenticator) Authenticate(u *domain.User) (string, error) {
     responseBody, err := requester.Execute()
     handleError(err)
 
-    err = json.Unmarshal(responseBody, &structure)
+    err = json.Unmarshal(responseBody, &response.Structure)
     if err != nil {
         return "", err
     }
-    return structure.APIToken, nil
+    return response.User().APIToken, nil
 }
