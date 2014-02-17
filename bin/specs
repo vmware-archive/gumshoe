@@ -2,7 +2,7 @@ GREEN="\033[0;32m"
 RED="\033[0;31m"
 NONE="\033[0m"
 
-go test -v ./trackerapi ./trackerapi/domain ./trackerapi/presenters ./term
+go test -v ./trackerapi ./trackerapi/domain ./trackerapi/presenters ./trackerapi/responses ./term
 
 if [[ $? = 0 ]] ; then
     STATE="${GREEN}ALL GOOD BASSI!${NONE}"
