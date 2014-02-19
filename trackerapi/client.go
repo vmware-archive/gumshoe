@@ -41,31 +41,36 @@ func (c *Client) SetResolver(resolver *Resolver) {
 
 func (c *Client) Me() fmt.Stringer {
     response := responses.Me{}
-    c.executeRequest(&response.Structure, c.Resolver.MeRequestURL())
+    responseBody := c.executeRequest(c.Resolver.MeRequestURL())
+    err := json.Unmarshal(responseBody, &response.Structure)
+    handleError(err)
     return presenters.User{response.User()}
 }
 
 func (c *Client) Projects() fmt.Stringer {
     response := responses.Projects{}
-    c.executeRequest(&response.Structure, c.Resolver.ProjectsRequestURL())
+    responseBody := c.executeRequest(c.Resolver.ProjectsRequestURL())
+    err := json.Unmarshal(responseBody, &response.Structure)
+    handleError(err)
     return presenters.Projects{response.Projects()}
 }
 
 func (c *Client) Activity(projectID int) fmt.Stringer {
     response := responses.Activities{}
-    c.executeRequest(&response.Structure, c.Resolver.ActivityRequestURL(projectID))
+    responseBody := c.executeRequest(c.Resolver.ActivityRequestURL(projectID))
+    err := json.Unmarshal(responseBody, &response.Structure)
+    handleError(err)
     return presenters.Activities{response.Activities()}
 }
 
-func (c *Client) executeRequest(structure interface{}, url string) {
+func (c *Client) executeRequest(url string) []byte {
     strategy := &APITokenStrategy{
         APIToken: c.user.APIToken,
     }
     requester := NewRequester(url, strategy)
     responseBody, err := requester.Execute()
     handleError(err)
-    err = json.Unmarshal(responseBody, structure)
-    handleError(err)
+    return responseBody
 }
 
 func (c *Client) Cleanup() {
