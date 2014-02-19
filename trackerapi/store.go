@@ -3,6 +3,7 @@ package trackerapi
 import (
     "encoding/json"
     "os"
+    "os/user"
 )
 
 type Store struct {
@@ -11,9 +12,11 @@ type Store struct {
 }
 
 func NewStore() *Store {
+    u, err := user.Current()
+    handleError(err)
     return &Store{
         cache:    make(map[string]string),
-        filePath: homeDir() + "/.tracker",
+        filePath: u.HomeDir + "/.tracker",
     }
 }
 
