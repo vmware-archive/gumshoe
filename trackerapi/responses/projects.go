@@ -14,10 +14,10 @@ func (p *Projects) Parse(body []byte) error {
 }
 
 type ProjectStructure struct {
-    ID               int    `json:"id"`
-    Name             string `json:"name"`
-    Description      string `json:"description"`
-    CurrentIteration int    `json:"current_iteration_number"`
+    ID               int
+    Name             string
+    Description      string
+    CurrentIteration int `json:"current_iteration_number"`
 }
 
 func (s ProjectStructure) Project() domain.Project {

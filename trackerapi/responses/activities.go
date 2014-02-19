@@ -22,7 +22,7 @@ func (a Activities) Activities() []domain.Activity {
 }
 
 type ActivityStructure struct {
-    Message string `json:"message"`
+    Message string
 }
 
 func (s ActivityStructure) Activity() domain.Activity {

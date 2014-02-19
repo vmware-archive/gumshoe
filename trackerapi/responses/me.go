@@ -15,10 +15,10 @@ func (m *Me) Parse(body []byte) error {
 
 type MeStructure struct {
     APIToken string `json:"api_token"`
-    Username string `json:"username"`
-    Name     string `json:"name"`
-    Email    string `json:"email"`
-    Initials string `json:"initials"`
+    Username string
+    Name     string
+    Email    string
+    Initials string
     Timezone struct {
         OlsonName string `json:"olson_name"`
     }   `json:"time_zone"`
