@@ -7,7 +7,12 @@ run() {
 }
 
 if [[ "$1" == "" ]]; then
-    run ./trackerapi ./trackerapi/domain ./trackerapi/presenters ./trackerapi/responses ./term
+    run ./trackerapi \
+        ./trackerapi/domain \
+        ./trackerapi/presenters \
+        ./trackerapi/responses \
+        ./trackerapi/request \
+        ./term
 else
     run $1
 fi

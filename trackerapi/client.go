@@ -5,6 +5,7 @@ import (
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
     "github.com/pivotal/gumshoe/trackerapi/presenters"
+    "github.com/pivotal/gumshoe/trackerapi/request"
     "github.com/pivotal/gumshoe/trackerapi/responses"
 )
 
@@ -60,10 +61,10 @@ func (c *Client) Activity(projectID int) fmt.Stringer {
 }
 
 func (c *Client) executeRequest(url string) []byte {
-    strategy := &APITokenStrategy{
+    strategy := &request.APITokenStrategy{
         APIToken: c.user.APIToken,
     }
-    requester := NewRequester(url, strategy)
+    requester := request.New(url, strategy)
     responseBody, err := requester.Execute()
     handleError(err)
     return responseBody

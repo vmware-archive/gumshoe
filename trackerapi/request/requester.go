@@ -1,4 +1,4 @@
-package trackerapi
+package request
 
 import (
     "io/ioutil"
@@ -10,7 +10,7 @@ type Requester struct {
     authStrategy RequestAuthStrategy
 }
 
-func NewRequester(url string, authStrategy RequestAuthStrategy) Requester {
+func New(url string, authStrategy RequestAuthStrategy) Requester {
     return Requester{
         url:          url,
         authStrategy: authStrategy,

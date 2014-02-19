@@ -1,4 +1,4 @@
-package trackerapi_test
+package request_test
 
 import (
     "strings"
@@ -6,12 +6,12 @@ import (
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
+    "github.com/pivotal/gumshoe/trackerapi/request"
 )
 
 var _ = Describe("Request#Execute", func() {
     var (
         json     string
-        client   *trackerapi.Client
         ts       *TestServer
         resolver *trackerapi.Resolver
         token    string
@@ -19,9 +19,6 @@ var _ = Describe("Request#Execute", func() {
 
     BeforeEach(func() {
         token = "abcde90792f3898ab464cd3412345"
-        store := trackerapi.NewStore()
-        store.Set("APIToken", token)
-        client, _ = trackerapi.NewClient()
         json = `{
             "api_token": "abcde90792f3898ab464cd3412345",
             "name": "Mister Tee",
@@ -44,19 +41,17 @@ var _ = Describe("Request#Execute", func() {
         resolver = &trackerapi.Resolver{
             TrackerDomain: ts.URL,
         }
-        client.SetResolver(resolver)
     })
 
     AfterEach(func() {
-        client.Cleanup()
         ts.Close()
     })
 
     It("makes a request, returning the response body", func() {
-        strategy := &trackerapi.APITokenStrategy{
+        strategy := &request.APITokenStrategy{
             APIToken: token,
         }
-        requester := trackerapi.NewRequester(resolver.MeRequestURL(), strategy)
+        requester := request.New(resolver.MeRequestURL(), strategy)
         responseBody, _ := requester.Execute()
         actual := strings.TrimSpace(string(responseBody))
         Expect(actual).To(Equal(json))
