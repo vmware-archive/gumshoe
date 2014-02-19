@@ -5,7 +5,6 @@ import (
 
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
-    "github.com/pivotal/gumshoe/trackerapi"
     "github.com/pivotal/gumshoe/trackerapi/request"
 )
 
@@ -13,7 +12,7 @@ var _ = Describe("Request#Execute", func() {
     var (
         json     string
         ts       *TestServer
-        resolver *trackerapi.Resolver
+        resolver *request.Resolver
         token    string
     )
 
@@ -38,7 +37,7 @@ var _ = Describe("Request#Execute", func() {
         }
         ts.Boot()
         ts.SetResponse("/me", json)
-        resolver = &trackerapi.Resolver{
+        resolver = &request.Resolver{
             TrackerDomain: ts.URL,
         }
     })

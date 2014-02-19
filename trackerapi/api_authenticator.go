@@ -9,13 +9,13 @@ import (
 )
 
 type APIAuthenticator struct {
-    Resolver *Resolver
+    Resolver *request.Resolver
     user     *domain.User
 }
 
 func NewAPIAuthenticator() *APIAuthenticator {
     return &APIAuthenticator{
-        Resolver: NewDefaultResolver(),
+        Resolver: request.NewDefaultResolver(),
     }
 }
 

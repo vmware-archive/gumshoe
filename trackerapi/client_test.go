@@ -4,6 +4,7 @@ import (
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
+    "github.com/pivotal/gumshoe/trackerapi/request"
 )
 
 var _ = Describe("Client", func() {
@@ -46,7 +47,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/me", json)
-            client.SetResolver(&trackerapi.Resolver{
+            client.SetResolver(&request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })
@@ -84,7 +85,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/projects", json)
-            client.SetResolver(&trackerapi.Resolver{
+            client.SetResolver(&request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })
@@ -113,7 +114,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/projects/124/activity", json)
-            client.SetResolver(&trackerapi.Resolver{
+            client.SetResolver(&request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })

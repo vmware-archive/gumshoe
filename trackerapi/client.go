@@ -10,7 +10,7 @@ import (
 )
 
 type Client struct {
-    Resolver *Resolver
+    Resolver *request.Resolver
     user     *domain.User
     store    *Store
 }
@@ -27,7 +27,7 @@ func NewClient() (*Client, error) {
     }
     user.SetAuthenticator(NewAPIAuthenticator())
     c := Client{
-        Resolver: NewDefaultResolver(),
+        Resolver: request.NewDefaultResolver(),
         store:    store,
         user:     user,
     }
@@ -35,7 +35,7 @@ func NewClient() (*Client, error) {
     return &c, nil
 }
 
-func (c *Client) SetResolver(resolver *Resolver) {
+func (c *Client) SetResolver(resolver *request.Resolver) {
     c.Resolver = resolver
 }
 

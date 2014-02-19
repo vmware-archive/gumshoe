@@ -1,4 +1,4 @@
-package trackerapi
+package request
 
 import "fmt"
 
