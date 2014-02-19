@@ -12,6 +12,7 @@ if [[ "$1" == "" ]]; then
         ./trackerapi/presenters \
         ./trackerapi/responses \
         ./trackerapi/request \
+        ./trackerapi/store \
         ./term
 else
     run $1

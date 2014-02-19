@@ -1,4 +1,4 @@
-package trackerapi
+package store
 
 import (
     "encoding/json"
@@ -6,21 +6,33 @@ import (
     "os/user"
 )
 
-type Store struct {
+func handleError(err error) {
+    if err != nil {
+        panic(err)
+    }
+}
+
+type Store interface {
+    Set(key, value string) error
+    Get(key string) (string, error)
+    Clear() error
+}
+
+type FileStore struct {
     cache    map[string]string
     filePath string
 }
 
-func NewStore() *Store {
+func NewFileStore() *FileStore {
     u, err := user.Current()
     handleError(err)
-    return &Store{
+    return &FileStore{
         cache:    make(map[string]string),
         filePath: u.HomeDir + "/.tracker",
     }
 }
 
-func (s *Store) Set(key, value string) error {
+func (s *FileStore) Set(key, value string) error {
     file, err := os.OpenFile(s.filePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
     if err != nil {
         return err
@@ -33,7 +45,7 @@ func (s *Store) Set(key, value string) error {
     return nil
 }
 
-func (s *Store) Get(key string) (string, error) {
+func (s *FileStore) Get(key string) (string, error) {
     file, err := os.OpenFile(s.filePath, os.O_CREATE|os.O_RDONLY, 0666)
     if err != nil {
         return "", err
@@ -44,7 +56,7 @@ func (s *Store) Get(key string) (string, error) {
     return s.cache[key], nil
 }
 
-func (s *Store) Clear() error {
+func (s *FileStore) Clear() error {
     s.cache = make(map[string]string)
     return os.Remove(s.filePath)
 }

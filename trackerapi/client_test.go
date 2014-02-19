@@ -5,6 +5,7 @@ import (
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi"
     "github.com/pivotal/gumshoe/trackerapi/request"
+    "github.com/pivotal/gumshoe/trackerapi/store"
 )
 
 var _ = Describe("Client", func() {
@@ -15,7 +16,7 @@ var _ = Describe("Client", func() {
     )
 
     BeforeEach(func() {
-        store := trackerapi.NewStore()
+        store := store.NewFileStore()
         store.Set("APIToken", "abcde90792f3898ab464cd3412345")
         client, _ = trackerapi.NewClient()
     })

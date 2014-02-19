@@ -7,16 +7,17 @@ import (
     "github.com/pivotal/gumshoe/trackerapi/presenters"
     "github.com/pivotal/gumshoe/trackerapi/request"
     "github.com/pivotal/gumshoe/trackerapi/responses"
+    "github.com/pivotal/gumshoe/trackerapi/store"
 )
 
 type Client struct {
     Resolver *request.Resolver
     user     *domain.User
-    store    *Store
+    store    store.Store
 }
 
 func NewClient() (*Client, error) {
-    store := NewStore()
+    store := store.NewFileStore()
     token, err := store.Get("APIToken")
     if err != nil {
         return nil, err
