@@ -20,11 +20,11 @@ func (u *User) Login(name, pass string) {
     u.Password = pass
 }
 
-func (u *User) IsAuthenticated() bool {
+func (u User) IsAuthenticated() bool {
     return u.APIToken != ""
 }
 
-func (u *User) HasCredentials() bool {
+func (u User) HasCredentials() bool {
     return u.Username != "" && u.Password != ""
 }
 
