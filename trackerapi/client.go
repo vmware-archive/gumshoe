@@ -64,7 +64,7 @@ func (c *Client) executeRequest(structure interface{}, url string) {
     requester := NewRequester(url, strategy)
     responseBody, err := requester.Execute()
     handleError(err)
-    err = json.Unmarshal(responseBody, &structure)
+    err = json.Unmarshal(responseBody, structure)
     handleError(err)
 }
 
