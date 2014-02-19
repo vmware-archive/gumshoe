@@ -1,7 +1,6 @@
 package trackerapi
 
 import (
-    "encoding/json"
     "fmt"
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
@@ -42,24 +41,21 @@ func (c *Client) SetResolver(resolver *Resolver) {
 func (c *Client) Me() fmt.Stringer {
     response := responses.Me{}
     responseBody := c.executeRequest(c.Resolver.MeRequestURL())
-    err := json.Unmarshal(responseBody, &response.Structure)
-    handleError(err)
+    response.Parse(responseBody)
     return presenters.User{response.User()}
 }
 
 func (c *Client) Projects() fmt.Stringer {
     response := responses.Projects{}
     responseBody := c.executeRequest(c.Resolver.ProjectsRequestURL())
-    err := json.Unmarshal(responseBody, &response.Structure)
-    handleError(err)
+    response.Parse(responseBody)
     return presenters.Projects{response.Projects()}
 }
 
 func (c *Client) Activity(projectID int) fmt.Stringer {
     response := responses.Activities{}
     responseBody := c.executeRequest(c.Resolver.ActivityRequestURL(projectID))
-    err := json.Unmarshal(responseBody, &response.Structure)
-    handleError(err)
+    response.Parse(responseBody)
     return presenters.Activities{response.Activities()}
 }
 

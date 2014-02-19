@@ -1,9 +1,24 @@
 package responses
 
-import "github.com/pivotal/gumshoe/trackerapi/domain"
+import (
+    "encoding/json"
+    "github.com/pivotal/gumshoe/trackerapi/domain"
+)
 
 type Activities struct {
-    Structure []ActivityStructure
+    structure []ActivityStructure
+}
+
+func (a *Activities) Parse(body []byte) error {
+    return json.Unmarshal(body, &a.structure)
+}
+
+func (a Activities) Activities() []domain.Activity {
+    activities := make([]domain.Activity, len(a.structure))
+    for i, activityStructure := range a.structure {
+        activities[i] = activityStructure.Activity()
+    }
+    return activities
 }
 
 type ActivityStructure struct {
@@ -14,12 +29,4 @@ func (s ActivityStructure) Activity() domain.Activity {
     return domain.Activity{
         Message: s.Message,
     }
-}
-
-func (a Activities) Activities() []domain.Activity {
-    activities := make([]domain.Activity, len(a.Structure))
-    for i, activityStructure := range a.Structure {
-        activities[i] = activityStructure.Activity()
-    }
-    return activities
 }

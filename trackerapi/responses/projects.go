@@ -1,9 +1,16 @@
 package responses
 
-import "github.com/pivotal/gumshoe/trackerapi/domain"
+import (
+    "encoding/json"
+    "github.com/pivotal/gumshoe/trackerapi/domain"
+)
 
 type Projects struct {
-    Structure []ProjectStructure
+    structure []ProjectStructure
+}
+
+func (p *Projects) Parse(body []byte) error {
+    return json.Unmarshal(body, &p.structure)
 }
 
 type ProjectStructure struct {
@@ -23,8 +30,8 @@ func (s ProjectStructure) Project() domain.Project {
 }
 
 func (r Projects) Projects() []domain.Project {
-    projects := make([]domain.Project, len(r.Structure))
-    for i, projectStructure := range r.Structure {
+    projects := make([]domain.Project, len(r.structure))
+    for i, projectStructure := range r.structure {
         projects[i] = projectStructure.Project()
     }
     return projects

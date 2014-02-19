@@ -1,8 +1,6 @@
 package responses_test
 
 import (
-    "encoding/json"
-
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi/responses"
@@ -29,7 +27,7 @@ var _ = Describe("Me Response", func() {
                 "olson_name": "America/Los_Angeles"
             }
         }`
-        json.Unmarshal([]byte(responseBody), &response.Structure)
+        response.Parse([]byte(responseBody))
     })
 
     It("can be used to unmarshal a response, returning a user domain object", func() {

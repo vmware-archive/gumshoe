@@ -1,9 +1,16 @@
 package responses
 
-import "github.com/pivotal/gumshoe/trackerapi/domain"
+import (
+    "encoding/json"
+    "github.com/pivotal/gumshoe/trackerapi/domain"
+)
 
 type Me struct {
-    Structure MeStructure
+    structure MeStructure
+}
+
+func (m *Me) Parse(body []byte) error {
+    return json.Unmarshal(body, &m.structure)
 }
 
 type MeStructure struct {
@@ -18,12 +25,13 @@ type MeStructure struct {
 }
 
 func (r Me) User() domain.User {
+    s := r.structure
     return domain.User{
-        Name:     r.Structure.Name,
-        Username: r.Structure.Username,
-        APIToken: r.Structure.APIToken,
-        Email:    r.Structure.Email,
-        Initials: r.Structure.Initials,
-        Timezone: r.Structure.Timezone.OlsonName,
+        Name:     s.Name,
+        Username: s.Username,
+        APIToken: s.APIToken,
+        Email:    s.Email,
+        Initials: s.Initials,
+        Timezone: s.Timezone.OlsonName,
     }
 }

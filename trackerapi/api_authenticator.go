@@ -1,7 +1,6 @@
 package trackerapi
 
 import (
-    "encoding/json"
     "errors"
 
     "github.com/pivotal/gumshoe/trackerapi/domain"
@@ -34,7 +33,7 @@ func (a *APIAuthenticator) Authenticate(u *domain.User) (string, error) {
     responseBody, err := requester.Execute()
     handleError(err)
 
-    err = json.Unmarshal(responseBody, &response.Structure)
+    err = response.Parse(responseBody)
     if err != nil {
         return "", err
     }
