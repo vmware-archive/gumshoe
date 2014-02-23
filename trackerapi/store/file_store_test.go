@@ -22,6 +22,10 @@ var _ = Describe("FileStore", func() {
         fileStore.SetFilePath(tempFile.Name())
     })
 
+    AfterEach(func() {
+        fileStore.Clear()
+    })
+
     It("stores arbitrary key-value pairs", func() {
         key := "Ryan Gosling"
         value := "Hey girl, I heard you like reading... Maybe you could read my lips."
