@@ -6,43 +6,43 @@ import (
     "github.com/pivotal/gumshoe/trackerapi/store"
 )
 
-var _ = Describe("FileStore", func() {
+var _ = Describe("MemoryStore", func() {
 
-    var fileStore *store.FileStore
+    var memoryStore *store.MemoryStore
 
     BeforeEach(func() {
-        fileStore = store.NewFileStore()
+        memoryStore = store.NewMemoryStore()
     })
 
     It("stores arbitrary key-value pairs", func() {
         key := "Ryan Gosling"
         value := "Hey girl, I heard you like reading... Maybe you could read my lips."
-        fileStore.Set(key, value)
-        retVal, _ := fileStore.Get(key)
+        memoryStore.Set(key, value)
+        retVal, _ := memoryStore.Get(key)
         Expect(retVal).To(Equal(value))
     })
 
-    It("persists the key-value pairs across store instances", func() {
+    It("does not persist the key-value pairs across store instances", func() {
         key := "Ryan Gosling"
         value := "Hey girl, I heard you like reading... Maybe you could read my lips."
-        fileStore.Set(key, value)
-        retVal, _ := fileStore.Get(key)
+        memoryStore.Set(key, value)
+        retVal, _ := memoryStore.Get(key)
         Expect(retVal).To(Equal(value))
 
-        fileStore = store.NewFileStore()
-        retVal, _ = fileStore.Get(key)
-        Expect(retVal).To(Equal(value))
+        memoryStore = store.NewMemoryStore()
+        retVal, _ = memoryStore.Get(key)
+        Expect(retVal).ToNot(Equal(value))
     })
 
     It("clears the cache and removes the .tracker file", func() {
         key := "Ryan Gosling"
         value := "Hey girl, I heard you like reading... Maybe you could read my lips."
-        fileStore.Set(key, value)
-        retVal, _ := fileStore.Get(key)
+        memoryStore.Set(key, value)
+        retVal, _ := memoryStore.Get(key)
         Expect(retVal).To(Equal(value))
-        fileStore.Clear()
+        memoryStore.Clear()
 
-        retVal, _ = fileStore.Get(key)
+        retVal, _ = memoryStore.Get(key)
         Expect(retVal).To(Equal(""))
     })
 })

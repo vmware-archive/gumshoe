@@ -6,18 +6,6 @@ import (
     "os/user"
 )
 
-func handleError(err error) {
-    if err != nil {
-        panic(err)
-    }
-}
-
-type Store interface {
-    Set(key, value string) error
-    Get(key string) (string, error)
-    Clear() error
-}
-
 type FileStore struct {
     cache    map[string]string
     filePath string
