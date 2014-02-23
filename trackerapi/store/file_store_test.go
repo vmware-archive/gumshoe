@@ -1,6 +1,9 @@
 package store_test
 
 import (
+    "io/ioutil"
+    "os"
+
     . "github.com/pivotal/gumshoe/repos/ginkgo"
     . "github.com/pivotal/gumshoe/repos/gomega"
     "github.com/pivotal/gumshoe/trackerapi/store"
@@ -8,10 +11,15 @@ import (
 
 var _ = Describe("FileStore", func() {
 
-    var fileStore *store.FileStore
+    var (
+        fileStore *store.FileStore
+        tempFile  *os.File
+    )
 
     BeforeEach(func() {
+        tempFile, _ = ioutil.TempFile("", ".tracker")
         fileStore = store.NewFileStore()
+        fileStore.SetFilePath(tempFile.Name())
     })
 
     It("stores arbitrary key-value pairs", func() {
@@ -30,6 +38,7 @@ var _ = Describe("FileStore", func() {
         Expect(retVal).To(Equal(value))
 
         fileStore = store.NewFileStore()
+        fileStore.SetFilePath(tempFile.Name())
         retVal, _ = fileStore.Get(key)
         Expect(retVal).To(Equal(value))
     })

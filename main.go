@@ -15,7 +15,7 @@ func main() {
     app.Name = "gumshoe"
     app.Usage = "talks to tracker"
 
-    client, err := trackerapi.NewClient()
+    client, err := trackerapi.NewClient(nil)
     if err != nil {
         panic(err)
     }

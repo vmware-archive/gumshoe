@@ -16,12 +16,12 @@ type Client struct {
     store    store.Store
 }
 
-func NewClient() (*Client, error) {
-    store := store.NewFileStore()
-    token, err := store.Get("APIToken")
-    if err != nil {
-        return nil, err
+func NewClient(s store.Store) (*Client, error) {
+    if s == nil {
+        s = store.NewFileStore()
     }
+    token, err := s.Get("APIToken")
+    handleError(err)
 
     user := &domain.User{
         APIToken: token,
@@ -29,7 +29,7 @@ func NewClient() (*Client, error) {
     user.SetAuthenticator(NewAPIAuthenticator())
     c := Client{
         Resolver: request.NewDefaultResolver(),
-        store:    store,
+        store:    s,
         user:     user,
     }
 

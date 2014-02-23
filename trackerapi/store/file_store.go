@@ -44,3 +44,7 @@ func (s *FileStore) Clear() error {
     s.memStore.Clear()
     return os.Remove(s.filePath)
 }
+
+func (s *FileStore) SetFilePath(path string) {
+    s.filePath = path
+}
