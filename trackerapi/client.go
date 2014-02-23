@@ -10,53 +10,66 @@ import (
     "github.com/pivotal/gumshoe/trackerapi/store"
 )
 
-type Client struct {
-    Resolver *request.Resolver
-    user     *domain.User
-    store    store.Store
+type Configuration struct {
+    Store    store.Store
+    Resolver request.Resolver
 }
 
-func NewClient(s store.Store) (*Client, error) {
-    if s == nil {
-        s = store.NewFileStore()
+func NewConfiguration() Configuration {
+    return Configuration{
+        Store:    store.NewFileStore(),
+        Resolver: request.NewDefaultResolver(),
     }
-    token, err := s.Get("APIToken")
+}
+
+func (c Configuration) User() domain.User {
+    token, err := c.Store.Get("APIToken")
     handleError(err)
 
-    user := &domain.User{
+    user := domain.User{
         APIToken: token,
     }
     user.SetAuthenticator(NewAPIAuthenticator())
-    c := Client{
-        Resolver: request.NewDefaultResolver(),
-        store:    s,
-        user:     user,
-    }
-
-    return &c, nil
+    return user
 }
 
-func (c *Client) SetResolver(resolver *request.Resolver) {
-    c.Resolver = resolver
+type Client struct {
+    resolver request.Resolver
+    user     domain.User
+    store    store.Store
+}
+
+func NewClient(c Configuration) (*Client, error) {
+    client := Client{
+        resolver: c.Resolver,
+        store:    c.Store,
+        user:     c.User(),
+    }
+
+    return &client, nil
+}
+
+func (c *Client) SetResolver(resolver request.Resolver) {
+    c.resolver = resolver
 }
 
 func (c *Client) Me() fmt.Stringer {
     response := responses.Me{}
-    responseBody := c.executeRequest(c.Resolver.MeRequestURL())
+    responseBody := c.executeRequest(c.resolver.MeRequestURL())
     response.Parse(responseBody)
     return presenters.User{response.User()}
 }
 
 func (c *Client) Projects() fmt.Stringer {
     response := responses.Projects{}
-    responseBody := c.executeRequest(c.Resolver.ProjectsRequestURL())
+    responseBody := c.executeRequest(c.resolver.ProjectsRequestURL())
     response.Parse(responseBody)
     return presenters.Projects{response.Projects()}
 }
 
 func (c *Client) Activity(projectID int) fmt.Stringer {
     response := responses.Activities{}
-    responseBody := c.executeRequest(c.Resolver.ActivityRequestURL(projectID))
+    responseBody := c.executeRequest(c.resolver.ActivityRequestURL(projectID))
     response.Parse(responseBody)
     return presenters.Activities{response.Activities()}
 }

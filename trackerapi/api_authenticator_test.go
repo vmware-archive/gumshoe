@@ -11,14 +11,14 @@ import (
 var _ = Describe("APIAuthenticator #Authenticate", func() {
 
     var (
-        user *domain.User
+        user domain.User
         auth *trackerapi.APIAuthenticator
         json string
         ts   *TestServer
     )
 
     BeforeEach(func() {
-        user = &domain.User{
+        user = domain.User{
             Username: "mister_tee",
             Password: "sekret",
         }
@@ -55,7 +55,7 @@ var _ = Describe("APIAuthenticator #Authenticate", func() {
     })
 
     It("requires a user with a username and password", func() {
-        _, err := auth.Authenticate(&domain.User{})
+        _, err := auth.Authenticate(domain.User{})
         Expect(fmt.Sprint(err)).To(Equal("Given domain.User does not have Username and Password"))
     })
 })

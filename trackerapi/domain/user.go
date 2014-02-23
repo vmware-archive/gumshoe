@@ -1,7 +1,7 @@
 package domain
 
 type Authenticator interface {
-    Authenticate(*User) (string, error)
+    Authenticate(User) (string, error)
 }
 
 type User struct {
@@ -33,7 +33,7 @@ func (u *User) SetAuthenticator(a Authenticator) {
 }
 
 func (u *User) Authenticate() error {
-    token, err := u.authenticator.Authenticate(u)
+    token, err := u.authenticator.Authenticate(*u)
     u.APIToken = token
     return err
 }

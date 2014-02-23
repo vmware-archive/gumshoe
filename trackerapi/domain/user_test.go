@@ -10,7 +10,7 @@ type FakeAuthenticator struct {
     APIToken string
 }
 
-func (fa *FakeAuthenticator) Authenticate(user *domain.User) (string, error) {
+func (fa *FakeAuthenticator) Authenticate(user domain.User) (string, error) {
     return fa.APIToken, nil
 }
 

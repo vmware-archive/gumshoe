@@ -16,9 +16,10 @@ var _ = Describe("Client", func() {
     )
 
     BeforeEach(func() {
-        store := store.NewMemoryStore()
-        store.Set("APIToken", "abcde90792f3898ab464cd3412345")
-        client, _ = trackerapi.NewClient(store)
+        config := trackerapi.NewConfiguration()
+        config.Store = store.NewMemoryStore()
+        config.Store.Set("APIToken", "abcde90792f3898ab464cd3412345")
+        client, _ = trackerapi.NewClient(config)
     })
 
     AfterEach(func() {
@@ -48,7 +49,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/me", json)
-            client.SetResolver(&request.Resolver{
+            client.SetResolver(request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })
@@ -86,7 +87,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/projects", json)
-            client.SetResolver(&request.Resolver{
+            client.SetResolver(request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })
@@ -115,7 +116,7 @@ var _ = Describe("Client", func() {
             }
             ts.Boot()
             ts.SetResponse("/projects/124/activity", json)
-            client.SetResolver(&request.Resolver{
+            client.SetResolver(request.Resolver{
                 TrackerDomain: ts.URL,
             })
         })

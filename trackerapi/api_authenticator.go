@@ -9,8 +9,8 @@ import (
 )
 
 type APIAuthenticator struct {
-    Resolver *request.Resolver
-    user     *domain.User
+    Resolver request.Resolver
+    user     domain.User
 }
 
 func NewAPIAuthenticator() *APIAuthenticator {
@@ -19,7 +19,7 @@ func NewAPIAuthenticator() *APIAuthenticator {
     }
 }
 
-func (a *APIAuthenticator) Authenticate(u *domain.User) (string, error) {
+func (a *APIAuthenticator) Authenticate(u domain.User) (string, error) {
     a.user = u
     if !a.user.HasCredentials() {
         return "", errors.New("Given domain.User does not have Username and Password")

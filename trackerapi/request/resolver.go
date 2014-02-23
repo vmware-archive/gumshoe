@@ -14,8 +14,8 @@ type Resolver struct {
     TrackerDomain string
 }
 
-func NewDefaultResolver() *Resolver {
-    return &Resolver{
+func NewDefaultResolver() Resolver {
+    return Resolver{
         TrackerDomain: TrackerDomain,
     }
 }
