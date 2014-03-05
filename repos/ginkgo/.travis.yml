@@ -1,11 +1,11 @@
 language: go
 go:
-  - 1.1
-  - tip
+  - 1.2
 
 install:
   - go get -v ./...
   - go get github.com/pivotal/gumshoe/repos/gomega
   - go install github.com/pivotal/gumshoe/repos/ginkgo/ginkgo
+  - export PATH=$PATH:$HOME/gopath/bin
 
 script: $HOME/gopath/bin/ginkgo -r --randomizeAllSpecs --failOnPending

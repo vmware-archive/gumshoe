@@ -15,9 +15,11 @@ func init() {
 			specSuite *suite
 			fakeT     *fakeTestingT
 			fakeR     *reporters.FakeReporter
+			writer    *fakeGinkgoWriter
 		)
 
 		BeforeEach(func() {
+			writer = &fakeGinkgoWriter{}
 			fakeT = &fakeTestingT{}
 			fakeR = reporters.NewFakeReporter()
 			specSuite = newSuite()
@@ -72,7 +74,7 @@ func init() {
 			})
 
 			JustBeforeEach(func() {
-				runResult = specSuite.run(fakeT, "suite description", []Reporter{fakeR}, config.GinkgoConfigType{
+				runResult = specSuite.run(fakeT, "suite description", []Reporter{fakeR}, writer, config.GinkgoConfigType{
 					RandomSeed:        randomSeed,
 					RandomizeAllSpecs: randomizeAllSpecs,
 					FocusString:       focusString,
@@ -85,6 +87,17 @@ func init() {
 				Ω(fakeR.Config.RandomSeed).Should(Equal(int64(randomSeed)))
 				Ω(fakeR.Config.RandomizeAllSpecs).Should(Equal(randomizeAllSpecs))
 				Ω(fakeR.BeginSummary.SuiteDescription).Should(Equal("suite description"))
+			})
+
+			It("provides information about the current test", func() {
+				description := CurrentGinkgoTestDescription()
+				Ω(description.ComponentTexts).Should(Equal([]string{"Suite", "running a suite", "provides information about the current test"}))
+				Ω(description.FullTestText).Should(Equal("Suite running a suite provides information about the current test"))
+				Ω(description.TestText).Should(Equal("provides information about the current test"))
+				Ω(description.IsMeasurement).Should(BeFalse())
+				Ω(description.FileName).Should(ContainSubstring("suite_test.go"))
+				Ω(description.LineNumber).Should(BeNumerically(">", 50))
+				Ω(description.LineNumber).Should(BeNumerically("<", 150))
 			})
 
 			Measure("should run measurements", func(b Benchmarker) {
