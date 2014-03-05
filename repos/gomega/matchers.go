@@ -1,9 +1,9 @@
 package gomega
 
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/pivotal/gumshoe/repos/gomega/matchers"
+    "github.com/pivotal/gumshoe/repos/gomega/matchers"
 )
 
 //Track whether we've already warned about a deprecated feature. Nobody likes a nag.
@@ -13,9 +13,9 @@ var deprecationWarnings map[string]bool = make(map[string]bool)
 //types when performing comparisons.
 //It is an error for both actual and expected to be nil.  Use BeNil() instead.
 func Equal(expected interface{}) OmegaMatcher {
-	return &matchers.EqualMatcher{
-		Expected: expected,
-	}
+    return &matchers.EqualMatcher{
+        Expected: expected,
+    }
 }
 
 //BeEquivalentTo is more lax than Equal, allowing equality between different types.
@@ -23,24 +23,24 @@ func Equal(expected interface{}) OmegaMatcher {
 //attempting equality with reflect.DeepEqual.
 //It is an error for actual and expected to be nil.  Use BeNil() instead.
 func BeEquivalentTo(expected interface{}) OmegaMatcher {
-	return &matchers.BeEquivalentToMatcher{
-		Expected: expected,
-	}
+    return &matchers.BeEquivalentToMatcher{
+        Expected: expected,
+    }
 }
 
 //BeNil succeeds if actual is nil
 func BeNil() OmegaMatcher {
-	return &matchers.BeNilMatcher{}
+    return &matchers.BeNilMatcher{}
 }
 
 //BeTrue succeeds if actual is true
 func BeTrue() OmegaMatcher {
-	return &matchers.BeTrueMatcher{}
+    return &matchers.BeTrueMatcher{}
 }
 
 //BeFalse succeeds if actual is false
 func BeFalse() OmegaMatcher {
-	return &matchers.BeFalseMatcher{}
+    return &matchers.BeFalseMatcher{}
 }
 
 //HaveOccurred succeeds if actual is a non-nil error
@@ -48,18 +48,18 @@ func BeFalse() OmegaMatcher {
 //    err := SomethingThatMightFail()
 //    Ω(err).ShouldNot(HaveOccurred())
 func HaveOccurred() OmegaMatcher {
-	return &matchers.HaveOccurredMatcher{}
+    return &matchers.HaveOccurredMatcher{}
 }
 
 //Legacy misspelling, provided for backwards compatibility.
 func HaveOccured() OmegaMatcher {
-	if !deprecationWarnings["HaveOccured"] {
-		fmt.Println("\nWARNING: The HaveOccured matcher is deprecated!")
-		fmt.Println(`We've corrected the spelling of "HaveOccured" to "HaveOccurred".`)
-		fmt.Println(`Update your package by running "gofmt -r 'HaveOccured() -> HaveOccurred()' -w *.go".`)
-		deprecationWarnings["HaveOccured"] = true
-	}
-	return &matchers.HaveOccurredMatcher{}
+    if !deprecationWarnings["HaveOccured"] {
+        fmt.Println("\nWARNING: The HaveOccured matcher is deprecated!")
+        fmt.Println(`We've corrected the spelling of "HaveOccured" to "HaveOccurred".`)
+        fmt.Println(`Update your package by running "gofmt -r 'HaveOccured() -> HaveOccurred()' -w *.go".`)
+        deprecationWarnings["HaveOccured"] = true
+    }
+    return &matchers.HaveOccurredMatcher{}
 }
 
 //BeClosed succeeds if actual is a closed channel.
@@ -74,7 +74,7 @@ func HaveOccured() OmegaMatcher {
 //
 //Finally, as a corollary: it is an error to check whether or not a send-only channel is closed.
 func BeClosed() OmegaMatcher {
-	return &matchers.BeClosedMatcher{}
+    return &matchers.BeClosedMatcher{}
 }
 
 //Receive succeeds if there is a message to be received on actual.
@@ -102,60 +102,60 @@ func BeClosed() OmegaMatcher {
 //    Eventually(stringChan).Should(Receive(&receivedString))
 //    Ω(receivedString).Shoudl(Equal("foo"))
 func Receive(args ...interface{}) OmegaMatcher {
-	var arg interface{}
-	if len(args) > 0 {
-		arg = args[0]
-	}
+    var arg interface{}
+    if len(args) > 0 {
+        arg = args[0]
+    }
 
-	return &matchers.ReceiveMatcher{
-		Arg: arg,
-	}
+    return &matchers.ReceiveMatcher{
+        Arg: arg,
+    }
 }
 
 //MatchRegexp succeeds if actual is a string or stringer that matches the
 //passed-in regexp.  Optional arguments can be provided to construct a regexp
 //via fmt.Sprintf().
 func MatchRegexp(regexp string, args ...interface{}) OmegaMatcher {
-	return &matchers.MatchRegexpMatcher{
-		Regexp: regexp,
-		Args:   args,
-	}
+    return &matchers.MatchRegexpMatcher{
+        Regexp: regexp,
+        Args:   args,
+    }
 }
 
 //ContainSubstring succeeds if actual is a string or stringer that contains the
 //passed-in regexp.  Optional arguments can be provided to construct the substring
 //via fmt.Sprintf().
 func ContainSubstring(substr string, args ...interface{}) OmegaMatcher {
-	return &matchers.ContainSubstringMatcher{
-		Substr: substr,
-		Args:   args,
-	}
+    return &matchers.ContainSubstringMatcher{
+        Substr: substr,
+        Args:   args,
+    }
 }
 
 //MatchJSON succeeds if actual is a string or stringer of JSON that matches
 //the expected JSON.  The JSONs are decoded and the resulting objects is compared via
 //reflect.DeepEqual so things like key-ordering and whitespace shouldn't matter.
 func MatchJSON(json interface{}) OmegaMatcher {
-	return &matchers.MatchJSONMatcher{
-		JSONToMatch: json,
-	}
+    return &matchers.MatchJSONMatcher{
+        JSONToMatch: json,
+    }
 }
 
 //BeEmpty succeeds if actual is empty.  Actual must be of type string, array, map, chan, or slice.
 func BeEmpty() OmegaMatcher {
-	return &matchers.BeEmptyMatcher{}
+    return &matchers.BeEmptyMatcher{}
 }
 
 //HaveLen succeeds if actual has the passed-in length.  Actual must be of type string, array, map, chan, or slice.
 func HaveLen(count int) OmegaMatcher {
-	return &matchers.HaveLenMatcher{
-		Count: count,
-	}
+    return &matchers.HaveLenMatcher{
+        Count: count,
+    }
 }
 
 //BeZero succeeds if actual is the zero value for its type or if actual is nil.
 func BeZero() OmegaMatcher {
-	return &matchers.BeZeroMatcher{}
+    return &matchers.BeZeroMatcher{}
 }
 
 //ContainElement succeeds if actual contains the passed in element.
@@ -166,9 +166,9 @@ func BeZero() OmegaMatcher {
 //Actual must be an array, slice or map.
 //For maps, containElement searches through the map's values.
 func ContainElement(element interface{}) OmegaMatcher {
-	return &matchers.ContainElementMatcher{
-		Element: element,
-	}
+    return &matchers.ContainElementMatcher{
+        Element: element,
+    }
 }
 
 //HaveKey succeeds if actual is a map with the passed in key.
@@ -176,9 +176,9 @@ func ContainElement(element interface{}) OmegaMatcher {
 //matcher can be passed in instead:
 //    Ω(map[string]string{"Foo": "Bar", "BazFoo": "Duck"}).Should(HaveKey(MatchRegexp(`.+Foo$`)))
 func HaveKey(key interface{}) OmegaMatcher {
-	return &matchers.HaveKeyMatcher{
-		Key: key,
-	}
+    return &matchers.HaveKeyMatcher{
+        Key: key,
+    }
 }
 
 //BeNumerically performs numerical assertions in a type-agnostic way.
@@ -193,10 +193,10 @@ func HaveKey(key interface{}) OmegaMatcher {
 //    Ω(1.0).Should(BeNumerically("<", 3))
 //    Ω(1.0).Should(BeNumerically("<=", 1.0))
 func BeNumerically(comparator string, compareTo ...interface{}) OmegaMatcher {
-	return &matchers.BeNumericallyMatcher{
-		Comparator: comparator,
-		CompareTo:  compareTo,
-	}
+    return &matchers.BeNumericallyMatcher{
+        Comparator: comparator,
+        CompareTo:  compareTo,
+    }
 }
 
 //BeAssignableToTypeOf succeeds if actual is assignable to the type of expected.
@@ -206,13 +206,13 @@ func BeNumerically(comparator string, compareTo ...interface{}) OmegaMatcher {
 //	  Ω("foo").Should(BeAssignableToTypeOf("bar")) // different values same type
 //    Ω(struct{ Foo string }{}).Should(BeAssignableToTypeOf(struct{ Foo string }{}))
 func BeAssignableToTypeOf(expected interface{}) OmegaMatcher {
-	return &matchers.AssignableToTypeOfMatcher{
-		Expected: expected,
-	}
+    return &matchers.AssignableToTypeOfMatcher{
+        Expected: expected,
+    }
 }
 
 //Panic succeeds if actual is a function that, when invoked, panics.
 //Actual must be a function that takes no arguments and returns no results.
 func Panic() OmegaMatcher {
-	return &matchers.PanicMatcher{}
+    return &matchers.PanicMatcher{}
 }

@@ -1,48 +1,48 @@
 package ginkgo
 
 import (
-	. "github.com/pivotal/gumshoe/repos/gomega"
+    . "github.com/pivotal/gumshoe/repos/gomega"
 
-	"math/rand"
-	"testing"
+    "math/rand"
+    "testing"
 )
 
 func Test(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Ginkgo")
+    RegisterFailHandler(Fail)
+    RunSpecs(t, "Ginkgo")
 }
 
 //Helpers
 func shuffleStrings(arr []string, seed int64) []string {
-	r := rand.New(rand.NewSource(seed))
-	permutation := r.Perm(len(arr))
-	shuffled := make([]string, len(arr))
-	for i, j := range permutation {
-		shuffled[i] = arr[j]
-	}
+    r := rand.New(rand.NewSource(seed))
+    permutation := r.Perm(len(arr))
+    shuffled := make([]string, len(arr))
+    for i, j := range permutation {
+        shuffled[i] = arr[j]
+    }
 
-	return shuffled
+    return shuffled
 }
 
 //Fakes
 
 type fakeTestingT struct {
-	didFail bool
+    didFail bool
 }
 
 func (fakeT *fakeTestingT) Fail() {
-	fakeT.didFail = true
+    fakeT.didFail = true
 }
 
 type fakeGinkgoWriter struct {
-	didTruncate bool
-	didDump     bool
+    didTruncate bool
+    didDump     bool
 }
 
 func (writer *fakeGinkgoWriter) Truncate() {
-	writer.didTruncate = true
+    writer.didTruncate = true
 }
 
 func (writer *fakeGinkgoWriter) DumpOut() {
-	writer.didDump = true
+    writer.didDump = true
 }

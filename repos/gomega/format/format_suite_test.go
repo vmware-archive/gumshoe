@@ -1,13 +1,13 @@
 package format_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+    . "github.com/onsi/ginkgo"
+    . "github.com/onsi/gomega"
 
-	"testing"
+    "testing"
 )
 
 func TestFormat(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Format Suite")
+    RegisterFailHandler(Fail)
+    RunSpecs(t, "Format Suite")
 }

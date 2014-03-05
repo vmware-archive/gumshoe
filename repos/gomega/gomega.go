@@ -24,7 +24,7 @@ type OmegaFailHandler func(message string, callerSkip ...int)
 //RegisterFailHandler connects Ginkgo to Gomega.  When a matcher fails
 //the fail handler passed into RegisterFailHandler is called.
 func RegisterFailHandler(handler OmegaFailHandler) {
-	globalFailHandler = handler
+    globalFailHandler = handler
 }
 
 //Ω wraps an actual value allowing assertions to be made on it:
@@ -45,7 +45,7 @@ func RegisterFailHandler(handler OmegaFailHandler) {
 //
 //Ω and Expect are identical
 func Ω(actual interface{}, extra ...interface{}) Actual {
-	return ExpectWithOffset(0, actual, extra...)
+    return ExpectWithOffset(0, actual, extra...)
 }
 
 //Expect wraps an actual value allowing assertions to be made on it:
@@ -66,7 +66,7 @@ func Ω(actual interface{}, extra ...interface{}) Actual {
 //
 //Expect and Ω are identical
 func Expect(actual interface{}, extra ...interface{}) Actual {
-	return ExpectWithOffset(0, actual, extra...)
+    return ExpectWithOffset(0, actual, extra...)
 }
 
 //ExpectWithOffset wraps an actual value allowing assertions to be made on it:
@@ -79,7 +79,7 @@ func Expect(actual interface{}, extra ...interface{}) Actual {
 //error message to refer to the calling line in the test (as opposed to the line in the helper function)
 //set the first argument of `ExpectWithOffset` appropriately.
 func ExpectWithOffset(offset int, actual interface{}, extra ...interface{}) Actual {
-	return newActual(actual, globalFailHandler, offset, extra...)
+    return newActual(actual, globalFailHandler, offset, extra...)
 }
 
 //Eventually wraps an actual value allowing assertions to be made on it.
@@ -116,22 +116,22 @@ func ExpectWithOffset(offset int, actual interface{}, extra ...interface{}) Actu
 //
 //Eventually's default timeout is 1 second, and its default polling interval is 10ms
 func Eventually(actual interface{}, intervals ...float64) AsyncActual {
-	return EventuallyWithOffset(0, actual, intervals...)
+    return EventuallyWithOffset(0, actual, intervals...)
 }
 
 //EventuallyWithOffset operates like Eventually but takes an additional
 //initial argument to indicate an offset in the call stack.  This is useful when building helper
 //functions that contain matchers.  To learn more, read about `ExpectWithOffset`.
 func EventuallyWithOffset(offset int, actual interface{}, intervals ...float64) AsyncActual {
-	timeoutInterval := time.Duration(1 * time.Second)
-	pollingInterval := time.Duration(10 * time.Millisecond)
-	if len(intervals) > 0 {
-		timeoutInterval = time.Duration(intervals[0] * float64(time.Second))
-	}
-	if len(intervals) > 1 {
-		pollingInterval = time.Duration(intervals[1] * float64(time.Second))
-	}
-	return newAsyncActual(asyncActualTypeEventually, actual, globalFailHandler, timeoutInterval, pollingInterval, offset)
+    timeoutInterval := time.Duration(1 * time.Second)
+    pollingInterval := time.Duration(10 * time.Millisecond)
+    if len(intervals) > 0 {
+        timeoutInterval = time.Duration(intervals[0] * float64(time.Second))
+    }
+    if len(intervals) > 1 {
+        pollingInterval = time.Duration(intervals[1] * float64(time.Second))
+    }
+    return newAsyncActual(asyncActualTypeEventually, actual, globalFailHandler, timeoutInterval, pollingInterval, offset)
 }
 
 //Consistently wraps an actual value allowing assertions to be made on it.
@@ -155,22 +155,22 @@ func EventuallyWithOffset(offset int, actual interface{}, intervals ...float64) 
 //
 //Consistently's default duration is 100ms, and its default polling interval is 10ms
 func Consistently(actual interface{}, intervals ...float64) AsyncActual {
-	return ConsistentlyWithOffset(0, actual, intervals...)
+    return ConsistentlyWithOffset(0, actual, intervals...)
 }
 
 //ConsistentlyWithOffset operates like Consistnetly but takes an additional
 //initial argument to indicate an offset in the call stack.  This is useful when building helper
 //functions that contain matchers.  To learn more, read about `ExpectWithOffset`.
 func ConsistentlyWithOffset(offset int, actual interface{}, intervals ...float64) AsyncActual {
-	timeoutInterval := time.Duration(100 * time.Millisecond)
-	pollingInterval := time.Duration(10 * time.Millisecond)
-	if len(intervals) > 0 {
-		timeoutInterval = time.Duration(intervals[0] * float64(time.Second))
-	}
-	if len(intervals) > 1 {
-		pollingInterval = time.Duration(intervals[1] * float64(time.Second))
-	}
-	return newAsyncActual(asyncActualTypeConsistently, actual, globalFailHandler, timeoutInterval, pollingInterval, offset)
+    timeoutInterval := time.Duration(100 * time.Millisecond)
+    pollingInterval := time.Duration(10 * time.Millisecond)
+    if len(intervals) > 0 {
+        timeoutInterval = time.Duration(intervals[0] * float64(time.Second))
+    }
+    if len(intervals) > 1 {
+        pollingInterval = time.Duration(intervals[1] * float64(time.Second))
+    }
+    return newAsyncActual(asyncActualTypeConsistently, actual, globalFailHandler, timeoutInterval, pollingInterval, offset)
 }
 
 //AsyncActual is returned by Eventually and Consistently and polls the actual value passed into Eventually against
@@ -187,8 +187,8 @@ func ConsistentlyWithOffset(offset int, actual interface{}, intervals ...float64
 //  Eventually(myChannel).Should(Receive(), "Something should have come down the pipe.")
 //  Consistently(myChannel).ShouldNot(Receive(), "Nothing should have come down the pipe.")
 type AsyncActual interface {
-	Should(matcher OmegaMatcher, optionalDescription ...interface{}) bool
-	ShouldNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    Should(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    ShouldNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
 }
 
 //Actual is returned by Ω and Expect and compares the actual value to the matcher
@@ -206,17 +206,17 @@ type AsyncActual interface {
 //
 //   Ω(farm.HasCow()).Should(BeTrue(), "Farm %v should have a cow", farm)
 type Actual interface {
-	Should(matcher OmegaMatcher, optionalDescription ...interface{}) bool
-	ShouldNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    Should(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    ShouldNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
 
-	To(matcher OmegaMatcher, optionalDescription ...interface{}) bool
-	ToNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
-	NotTo(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    To(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    ToNot(matcher OmegaMatcher, optionalDescription ...interface{}) bool
+    NotTo(matcher OmegaMatcher, optionalDescription ...interface{}) bool
 }
 
 //All Gomega matchers must implement the OmegaMatcher interface
 //
 //For details on writing custom matchers, check out: http://onsi.github.io/gomega/#adding_your_own_matchers
 type OmegaMatcher interface {
-	Match(actual interface{}) (success bool, message string, err error)
+    Match(actual interface{}) (success bool, message string, err error)
 }

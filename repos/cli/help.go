@@ -1,10 +1,10 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-	"text/tabwriter"
-	"text/template"
+    "fmt"
+    "os"
+    "text/tabwriter"
+    "text/template"
 )
 
 // The text template for the Default help topic.
@@ -45,74 +45,74 @@ OPTIONS:
 `
 
 var helpCommand = Command{
-	Name:      "help",
-	ShortName: "h",
-	Usage:     "Shows a list of commands or help for one command",
-	Action: func(c *Context) {
-		args := c.Args()
-		if args.Present() {
-			ShowCommandHelp(c, args.First())
-		} else {
-			ShowAppHelp(c)
-		}
-	},
+    Name:      "help",
+    ShortName: "h",
+    Usage:     "Shows a list of commands or help for one command",
+    Action: func(c *Context) {
+        args := c.Args()
+        if args.Present() {
+            ShowCommandHelp(c, args.First())
+        } else {
+            ShowAppHelp(c)
+        }
+    },
 }
 
 // Prints help for the App
 func ShowAppHelp(c *Context) {
-	printHelp(AppHelpTemplate, c.App)
+    printHelp(AppHelpTemplate, c.App)
 }
 
 // Prints help for the given command
 func ShowCommandHelp(c *Context, command string) {
-	for _, c := range c.App.Commands {
-		if c.HasName(command) {
-			printHelp(CommandHelpTemplate, c)
-			return
-		}
-	}
+    for _, c := range c.App.Commands {
+        if c.HasName(command) {
+            printHelp(CommandHelpTemplate, c)
+            return
+        }
+    }
 
-	fmt.Printf("No help topic for '%v'\n", command)
+    fmt.Printf("No help topic for '%v'\n", command)
 }
 
 // Prints the version number of the App
 func ShowVersion(c *Context) {
-	fmt.Printf("%v version %v\n", c.App.Name, c.App.Version)
+    fmt.Printf("%v version %v\n", c.App.Name, c.App.Version)
 }
 
 func printHelp(templ string, data interface{}) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', 0)
-	t := template.Must(template.New("help").Parse(templ))
-	err := t.Execute(w, data)
-	if err != nil {
-		panic(err)
-	}
-	w.Flush()
+    w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', 0)
+    t := template.Must(template.New("help").Parse(templ))
+    err := t.Execute(w, data)
+    if err != nil {
+        panic(err)
+    }
+    w.Flush()
 }
 
 func checkVersion(c *Context) bool {
-	if c.GlobalBool("version") {
-		ShowVersion(c)
-		return true
-	}
+    if c.GlobalBool("version") {
+        ShowVersion(c)
+        return true
+    }
 
-	return false
+    return false
 }
 
 func checkHelp(c *Context) bool {
-	if c.GlobalBool("h") || c.GlobalBool("help") {
-		ShowAppHelp(c)
-		return true
-	}
+    if c.GlobalBool("h") || c.GlobalBool("help") {
+        ShowAppHelp(c)
+        return true
+    }
 
-	return false
+    return false
 }
 
 func checkCommandHelp(c *Context, name string) bool {
-	if c.Bool("h") || c.Bool("help") {
-		ShowCommandHelp(c, name)
-		return true
-	}
+    if c.Bool("h") || c.Bool("help") {
+        ShowCommandHelp(c, name)
+        return true
+    }
 
-	return false
+    return false
 }

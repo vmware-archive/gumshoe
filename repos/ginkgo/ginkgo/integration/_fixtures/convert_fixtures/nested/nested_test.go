@@ -1,10 +1,10 @@
 package nested
 
 import (
-	"testing"
+    "testing"
 )
 
 func TestSomethingLessImportant(t *testing.T) {
-	whatever := &UselessStruct{}
-	t.Fail(whatever.ImportantField != "SECRET_PASSWORD")
+    whatever := &UselessStruct{}
+    t.Fail(whatever.ImportantField != "SECRET_PASSWORD")
 }

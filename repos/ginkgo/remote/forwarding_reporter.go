@@ -1,17 +1,17 @@
 package remote
 
 import (
-	"bytes"
-	"encoding/json"
-	"github.com/pivotal/gumshoe/repos/ginkgo/config"
-	"github.com/pivotal/gumshoe/repos/ginkgo/types"
-	"io"
-	"net/http"
+    "bytes"
+    "encoding/json"
+    "github.com/pivotal/gumshoe/repos/ginkgo/config"
+    "github.com/pivotal/gumshoe/repos/ginkgo/types"
+    "io"
+    "net/http"
 )
 
 //An interface to net/http's client to allow the injection of fakes under test
 type Poster interface {
-	Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)
+    Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)
 }
 
 /*
@@ -26,48 +26,48 @@ in place of Ginkgo's DefaultReporter.
 */
 
 type ForwardingReporter struct {
-	serverHost        string
-	poster            Poster
-	outputInterceptor OutputInterceptor
+    serverHost        string
+    poster            Poster
+    outputInterceptor OutputInterceptor
 }
 
 func NewForwardingReporter(serverHost string, poster Poster, outputInterceptor OutputInterceptor) *ForwardingReporter {
-	return &ForwardingReporter{
-		serverHost:        serverHost,
-		poster:            poster,
-		outputInterceptor: outputInterceptor,
-	}
+    return &ForwardingReporter{
+        serverHost:        serverHost,
+        poster:            poster,
+        outputInterceptor: outputInterceptor,
+    }
 }
 
 func (reporter *ForwardingReporter) post(path string, data interface{}) {
-	encoded, _ := json.Marshal(data)
-	buffer := bytes.NewBuffer(encoded)
-	reporter.poster.Post("http://"+reporter.serverHost+path, "application/json", buffer)
+    encoded, _ := json.Marshal(data)
+    buffer := bytes.NewBuffer(encoded)
+    reporter.poster.Post("http://"+reporter.serverHost+path, "application/json", buffer)
 }
 
 func (reporter *ForwardingReporter) SpecSuiteWillBegin(conf config.GinkgoConfigType, summary *types.SuiteSummary) {
-	data := struct {
-		Config  config.GinkgoConfigType `json:"config"`
-		Summary *types.SuiteSummary     `json:"suite-summary"`
-	}{
-		conf,
-		summary,
-	}
+    data := struct {
+        Config  config.GinkgoConfigType `json:"config"`
+        Summary *types.SuiteSummary     `json:"suite-summary"`
+    }{
+        conf,
+        summary,
+    }
 
-	reporter.post("/SpecSuiteWillBegin", data)
+    reporter.post("/SpecSuiteWillBegin", data)
 }
 
 func (reporter *ForwardingReporter) ExampleWillRun(exampleSummary *types.ExampleSummary) {
-	reporter.outputInterceptor.StartInterceptingOutput()
-	reporter.post("/ExampleWillRun", exampleSummary)
+    reporter.outputInterceptor.StartInterceptingOutput()
+    reporter.post("/ExampleWillRun", exampleSummary)
 }
 
 func (reporter *ForwardingReporter) ExampleDidComplete(exampleSummary *types.ExampleSummary) {
-	output, _ := reporter.outputInterceptor.StopInterceptingAndReturnOutput()
-	exampleSummary.CapturedOutput = output
-	reporter.post("/ExampleDidComplete", exampleSummary)
+    output, _ := reporter.outputInterceptor.StopInterceptingAndReturnOutput()
+    exampleSummary.CapturedOutput = output
+    reporter.post("/ExampleDidComplete", exampleSummary)
 }
 
 func (reporter *ForwardingReporter) SpecSuiteDidEnd(summary *types.SuiteSummary) {
-	reporter.post("/SpecSuiteDidEnd", summary)
+    reporter.post("/SpecSuiteDidEnd", summary)
 }

@@ -1,9 +1,9 @@
 package subpackage
 
 import (
-	"testing"
+    "testing"
 )
 
 func TestNestedSubPackages(t *testing.T) {
-	t.Fail(true)
+    t.Fail(true)
 }

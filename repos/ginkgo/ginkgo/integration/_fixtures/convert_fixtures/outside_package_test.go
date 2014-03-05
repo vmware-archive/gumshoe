@@ -1,16 +1,16 @@
 package tmp_test
 
 import (
-	"testing"
+    "testing"
 )
 
 type UselessStruct struct {
-	ImportantField string
+    ImportantField string
 }
 
 func TestSomethingImportant(t *testing.T) {
-	whatever := &UselessStruct{}
-	if whatever.ImportantField != "SECRET_PASSWORD" {
-		t.Fail()
-	}
+    whatever := &UselessStruct{}
+    if whatever.ImportantField != "SECRET_PASSWORD" {
+        t.Fail()
+    }
 }

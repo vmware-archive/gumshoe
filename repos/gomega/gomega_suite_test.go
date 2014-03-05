@@ -1,29 +1,29 @@
 package gomega
 
 import (
-	. "github.com/pivotal/gumshoe/repos/ginkgo"
-	"testing"
+    . "github.com/pivotal/gumshoe/repos/ginkgo"
+    "testing"
 )
 
 func Test(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Gomega")
+    RegisterFailHandler(Fail)
+    RunSpecs(t, "Gomega")
 }
 
 func TestTestingT(t *testing.T) {
-	RegisterTestingT(t)
-	Ω(true).Should(BeTrue())
+    RegisterTestingT(t)
+    Ω(true).Should(BeTrue())
 }
 
 type fakeMatcher struct {
-	receivedActual  interface{}
-	matchesToReturn bool
-	messageToReturn string
-	errToReturn     error
+    receivedActual  interface{}
+    matchesToReturn bool
+    messageToReturn string
+    errToReturn     error
 }
 
 func (matcher *fakeMatcher) Match(actual interface{}) (bool, string, error) {
-	matcher.receivedActual = actual
+    matcher.receivedActual = actual
 
-	return matcher.matchesToReturn, matcher.messageToReturn, matcher.errToReturn
+    return matcher.matchesToReturn, matcher.messageToReturn, matcher.errToReturn
 }

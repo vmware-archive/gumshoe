@@ -1,51 +1,51 @@
 package types_test
 
 import (
-	. "github.com/pivotal/gumshoe/repos/ginkgo"
-	. "github.com/pivotal/gumshoe/repos/ginkgo/types"
-	. "github.com/pivotal/gumshoe/repos/gomega"
+    . "github.com/pivotal/gumshoe/repos/ginkgo"
+    . "github.com/pivotal/gumshoe/repos/ginkgo/types"
+    . "github.com/pivotal/gumshoe/repos/gomega"
 
-	"runtime"
+    "runtime"
 )
 
 func init() {
-	Describe("CodeLocation", func() {
-		var (
-			codeLocation       CodeLocation
-			expectedFileName   string
-			expectedLineNumber int
-		)
+    Describe("CodeLocation", func() {
+        var (
+            codeLocation       CodeLocation
+            expectedFileName   string
+            expectedLineNumber int
+        )
 
-		caller0 := func() {
-			codeLocation = GenerateCodeLocation(1)
-		}
+        caller0 := func() {
+            codeLocation = GenerateCodeLocation(1)
+        }
 
-		caller1 := func() {
-			_, expectedFileName, expectedLineNumber, _ = runtime.Caller(0)
-			expectedLineNumber += 2
-			caller0()
-		}
+        caller1 := func() {
+            _, expectedFileName, expectedLineNumber, _ = runtime.Caller(0)
+            expectedLineNumber += 2
+            caller0()
+        }
 
-		BeforeEach(func() {
-			caller1()
-		})
+        BeforeEach(func() {
+            caller1()
+        })
 
-		It("should use the passed in skip parameter to pick out the correct file & line number", func() {
-			Ω(codeLocation.FileName).Should(Equal(expectedFileName))
-			Ω(codeLocation.LineNumber).Should(Equal(expectedLineNumber))
-		})
+        It("should use the passed in skip parameter to pick out the correct file & line number", func() {
+            Ω(codeLocation.FileName).Should(Equal(expectedFileName))
+            Ω(codeLocation.LineNumber).Should(Equal(expectedLineNumber))
+        })
 
-		Describe("stringer behavior", func() {
-			It("should stringify nicely", func() {
-				Ω(codeLocation.String()).Should(ContainSubstring("code_location_test.go:%d", expectedLineNumber))
-			})
-		})
+        Describe("stringer behavior", func() {
+            It("should stringify nicely", func() {
+                Ω(codeLocation.String()).Should(ContainSubstring("code_location_test.go:%d", expectedLineNumber))
+            })
+        })
 
-		//There's no better way than to test this private method as it
-		//goes out of its way to prune out ginkgo related code in the stack trace
-		Describe("PruneStack", func() {
-			It("should remove any references to ginkgo and pkg/testing and pkg/runtime", func() {
-				input := `/Skip/me
+        //There's no better way than to test this private method as it
+        //goes out of its way to prune out ginkgo related code in the stack trace
+        Describe("PruneStack", func() {
+            It("should remove any references to ginkgo and pkg/testing and pkg/runtime", func() {
+                input := `/Skip/me
 Skip: skip()
 /Skip/me
 Skip: skip()
@@ -66,8 +66,8 @@ TestingT: Blah()
 /usr/goroot/pkg/runtime/runtime.go:12 (0x37f08)
 Something: Func()
 `
-				prunedStack := PruneStack(input, 1)
-				Ω(prunedStack).Should(Equal(`/usr/goroot/pkg/strings/oops.go:10 (0x12341)
+                prunedStack := PruneStack(input, 1)
+                Ω(prunedStack).Should(Equal(`/usr/goroot/pkg/strings/oops.go:10 (0x12341)
 Oops: BlowUp()
 /Users/whoever/gospace/src/mycode/code.go:10 (0x12341)
 MyCode: Func()
@@ -75,7 +75,7 @@ MyCode: Func()
 MyCodeTest: Func()
 /Users/whoever/gospace/src/mycode/code_suite_test.go:12 (0x37f08)
 TestFoo: RunSpecs(t, "Foo Suite")`))
-			})
-		})
-	})
+            })
+        })
+    })
 }

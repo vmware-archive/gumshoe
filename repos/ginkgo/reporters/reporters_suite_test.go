@@ -1,13 +1,13 @@
 package reporters_test
 
 import (
-	. "github.com/pivotal/gumshoe/repos/ginkgo"
-	. "github.com/pivotal/gumshoe/repos/gomega"
+    . "github.com/pivotal/gumshoe/repos/ginkgo"
+    . "github.com/pivotal/gumshoe/repos/gomega"
 
-	"testing"
+    "testing"
 )
 
 func TestReporters(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Reporters Suite")
+    RegisterFailHandler(Fail)
+    RunSpecs(t, "Reporters Suite")
 }

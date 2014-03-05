@@ -1,14 +1,14 @@
 package tmp
 
 import (
-	"testing"
+    "testing"
 )
 
 func TestSomethingLessImportant(t *testing.T) {
-	strp := "hello!"
-	somethingImportant(t, &strp)
+    strp := "hello!"
+    somethingImportant(t, &strp)
 }
 
 func somethingImportant(t *testing.T, message *string) {
-	t.Log("Something important happened in a test: " + *message)
+    t.Log("Something important happened in a test: " + *message)
 }

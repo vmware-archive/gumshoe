@@ -1,44 +1,44 @@
 package ginkgo
 
 import (
-	"github.com/pivotal/gumshoe/repos/ginkgo/types"
+    "github.com/pivotal/gumshoe/repos/ginkgo/types"
 )
 
 type node interface {
-	nodeType() nodeType
-	getText() string
+    nodeType() nodeType
+    getText() string
 }
 
 type exampleSubject interface {
-	node
+    node
 
-	run() (runOutcome, failureData)
-	getFlag() flagType
-	getCodeLocation() types.CodeLocation
+    run() (runOutcome, failureData)
+    getFlag() flagType
+    getCodeLocation() types.CodeLocation
 }
 
 type flagType uint
 
 const (
-	flagTypeNone flagType = iota
-	flagTypeFocused
-	flagTypePending
+    flagTypeNone flagType = iota
+    flagTypeFocused
+    flagTypePending
 )
 
 type runOutcome uint
 
 const (
-	runOutcomeInvalid runOutcome = iota
-	runOutcomePanicked
-	runOutcomeTimedOut
-	runOutcomeCompleted
+    runOutcomeInvalid runOutcome = iota
+    runOutcomePanicked
+    runOutcomeTimedOut
+    runOutcomeCompleted
 )
 
 type nodeType uint
 
 const (
-	nodeTypeInvalid nodeType = iota
-	nodeTypeContainer
-	nodeTypeIt
-	nodeTypeMeasure
+    nodeTypeInvalid nodeType = iota
+    nodeTypeContainer
+    nodeTypeIt
+    nodeTypeMeasure
 )

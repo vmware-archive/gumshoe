@@ -3,31 +3,31 @@
 package remote
 
 import (
-	"errors"
+    "errors"
 )
 
 func NewOutputInterceptor() OutputInterceptor {
-	return &outputInterceptor{}
+    return &outputInterceptor{}
 }
 
 type outputInterceptor struct {
-	intercepting bool
+    intercepting bool
 }
 
 func (interceptor *outputInterceptor) StartInterceptingOutput() error {
-	if interceptor.intercepting {
-		return errors.New("Already intercepting output!")
-	}
-	interceptor.intercepting = true
+    if interceptor.intercepting {
+        return errors.New("Already intercepting output!")
+    }
+    interceptor.intercepting = true
 
-	// not working on windows...
+    // not working on windows...
 
-	return nil
+    return nil
 }
 
 func (interceptor *outputInterceptor) StopInterceptingAndReturnOutput() (string, error) {
-	// not working on windows...
-	interceptor.intercepting = false
+    // not working on windows...
+    interceptor.intercepting = false
 
-	return "", nil
+    return "", nil
 }

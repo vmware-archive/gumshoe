@@ -1,13 +1,13 @@
 package convert
 
 import (
-	"fmt"
-	"go/build"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"regexp"
+    "fmt"
+    "go/build"
+    "io/ioutil"
+    "os"
+    "os/exec"
+    "path/filepath"
+    "regexp"
 )
 
 /*
@@ -16,15 +16,15 @@ import (
  * also be added for this package, and all of its child packages.
  */
 func RewritePackage(packageName string) {
-	pkg, err := packageWithName(packageName)
-	if err != nil {
-		panic(fmt.Sprintf("unexpected error reading package: '%s'\n%s\n", packageName, err.Error()))
-	}
+    pkg, err := packageWithName(packageName)
+    if err != nil {
+        panic(fmt.Sprintf("unexpected error reading package: '%s'\n%s\n", packageName, err.Error()))
+    }
 
-	for _, filename := range findTestsInPackage(pkg) {
-		rewriteTestsInFile(filename)
-	}
-	return
+    for _, filename := range findTestsInPackage(pkg) {
+        rewriteTestsInFile(filename)
+    }
+    return
 }
 
 /*
@@ -33,82 +33,82 @@ func RewritePackage(packageName string) {
  * found in this process.
  */
 func findTestsInPackage(pkg *build.Package) (testfiles []string) {
-	for _, file := range append(pkg.TestGoFiles, pkg.XTestGoFiles...) {
-		testfiles = append(testfiles, filepath.Join(pkg.Dir, file))
-	}
+    for _, file := range append(pkg.TestGoFiles, pkg.XTestGoFiles...) {
+        testfiles = append(testfiles, filepath.Join(pkg.Dir, file))
+    }
 
-	dirFiles, err := ioutil.ReadDir(pkg.Dir)
-	if err != nil {
-		panic(fmt.Sprintf("unexpected error reading dir: '%s'\n%s\n", pkg.Dir, err.Error()))
-	}
+    dirFiles, err := ioutil.ReadDir(pkg.Dir)
+    if err != nil {
+        panic(fmt.Sprintf("unexpected error reading dir: '%s'\n%s\n", pkg.Dir, err.Error()))
+    }
 
-	re := regexp.MustCompile(`^[._]`)
+    re := regexp.MustCompile(`^[._]`)
 
-	for _, file := range dirFiles {
-		if !file.IsDir() {
-			continue
-		}
+    for _, file := range dirFiles {
+        if !file.IsDir() {
+            continue
+        }
 
-		if re.Match([]byte(file.Name())) {
-			continue
-		}
+        if re.Match([]byte(file.Name())) {
+            continue
+        }
 
-		packageName := filepath.Join(pkg.ImportPath, file.Name())
-		subPackage, err := packageWithName(packageName)
-		if err != nil {
-			panic(fmt.Sprintf("unexpected error reading package: '%s'\n%s\n", packageName, err.Error()))
-		}
+        packageName := filepath.Join(pkg.ImportPath, file.Name())
+        subPackage, err := packageWithName(packageName)
+        if err != nil {
+            panic(fmt.Sprintf("unexpected error reading package: '%s'\n%s\n", packageName, err.Error()))
+        }
 
-		testfiles = append(testfiles, findTestsInPackage(subPackage)...)
-	}
+        testfiles = append(testfiles, findTestsInPackage(subPackage)...)
+    }
 
-	addGinkgoSuiteForPackage(pkg)
-	goFmtPackage(pkg)
-	return
+    addGinkgoSuiteForPackage(pkg)
+    goFmtPackage(pkg)
+    return
 }
 
 /*
  * Shells out to `ginkgo bootstrap` to create a test suite file
  */
 func addGinkgoSuiteForPackage(pkg *build.Package) {
-	originalDir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
+    originalDir, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
 
-	suite_test_file := filepath.Join(pkg.Dir, pkg.Name+"_suite_test.go")
+    suite_test_file := filepath.Join(pkg.Dir, pkg.Name+"_suite_test.go")
 
-	_, err = os.Stat(suite_test_file)
-	if err == nil {
-		return // test file already exists, this should be a no-op
-	}
+    _, err = os.Stat(suite_test_file)
+    if err == nil {
+        return // test file already exists, this should be a no-op
+    }
 
-	err = os.Chdir(pkg.Dir)
-	if err != nil {
-		panic(err)
-	}
+    err = os.Chdir(pkg.Dir)
+    if err != nil {
+        panic(err)
+    }
 
-	output, err := exec.Command("ginkgo", "bootstrap").Output()
+    output, err := exec.Command("ginkgo", "bootstrap").Output()
 
-	if err != nil {
-		panic(fmt.Sprintf("error running 'ginkgo bootstrap'.\nstdout: %s\n%s\n", output, err.Error()))
-	}
+    if err != nil {
+        panic(fmt.Sprintf("error running 'ginkgo bootstrap'.\nstdout: %s\n%s\n", output, err.Error()))
+    }
 
-	err = os.Chdir(originalDir)
-	if err != nil {
-		panic(err)
-	}
+    err = os.Chdir(originalDir)
+    if err != nil {
+        panic(err)
+    }
 }
 
 /*
  * Shells out to `go fmt` to format the package
  */
 func goFmtPackage(pkg *build.Package) {
-	output, err := exec.Command("go", "fmt", pkg.ImportPath).Output()
+    output, err := exec.Command("go", "fmt", pkg.ImportPath).Output()
 
-	if err != nil {
-		fmt.Printf("Warning: Error running 'go fmt %s'.\nstdout: %s\n%s\n", pkg.ImportPath, output, err.Error())
-	}
+    if err != nil {
+        fmt.Printf("Warning: Error running 'go fmt %s'.\nstdout: %s\n%s\n", pkg.ImportPath, output, err.Error())
+    }
 }
 
 /*
@@ -117,11 +117,11 @@ func goFmtPackage(pkg *build.Package) {
  * buildable go files inside the package, but it fails if the package has no go files
  */
 func packageWithName(name string) (pkg *build.Package, err error) {
-	pkg, err = build.Default.Import(name, ".", build.ImportMode(0))
-	if err == nil {
-		return
-	}
+    pkg, err = build.Default.Import(name, ".", build.ImportMode(0))
+    if err == nil {
+        return
+    }
 
-	pkg, err = build.Default.Import(name, ".", build.ImportMode(1))
-	return
+    pkg, err = build.Default.Import(name, ".", build.ImportMode(1))
+    return
 }

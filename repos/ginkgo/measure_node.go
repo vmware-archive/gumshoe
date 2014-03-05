@@ -1,51 +1,51 @@
 package ginkgo
 
 import (
-	"github.com/pivotal/gumshoe/repos/ginkgo/types"
+    "github.com/pivotal/gumshoe/repos/ginkgo/types"
 )
 
 type measureNode struct {
-	text         string
-	body         func(Benchmarker)
-	flag         flagType
-	codeLocation types.CodeLocation
-	samples      int
-	benchmarker  *benchmarker
+    text         string
+    body         func(Benchmarker)
+    flag         flagType
+    codeLocation types.CodeLocation
+    samples      int
+    benchmarker  *benchmarker
 }
 
 func newMeasureNode(text string, body func(Benchmarker), flag flagType, codeLocation types.CodeLocation, samples int) *measureNode {
-	return &measureNode{
-		text:         text,
-		body:         body,
-		flag:         flag,
-		codeLocation: codeLocation,
-		samples:      samples,
-		benchmarker:  newBenchmarker(),
-	}
+    return &measureNode{
+        text:         text,
+        body:         body,
+        flag:         flag,
+        codeLocation: codeLocation,
+        samples:      samples,
+        benchmarker:  newBenchmarker(),
+    }
 }
 
 func (node *measureNode) run() (outcome runOutcome, failure failureData) {
-	node.body(node.benchmarker)
+    node.body(node.benchmarker)
 
-	return runOutcomeCompleted, failureData{}
+    return runOutcomeCompleted, failureData{}
 }
 
 func (node *measureNode) measurementsReport() map[string]*types.ExampleMeasurement {
-	return node.benchmarker.measurementsReport()
+    return node.benchmarker.measurementsReport()
 }
 
 func (node *measureNode) nodeType() nodeType {
-	return nodeTypeMeasure
+    return nodeTypeMeasure
 }
 
 func (node *measureNode) getText() string {
-	return node.text
+    return node.text
 }
 
 func (node *measureNode) getFlag() flagType {
-	return node.flag
+    return node.flag
 }
 
 func (node *measureNode) getCodeLocation() types.CodeLocation {
-	return node.codeLocation
+    return node.codeLocation
 }
