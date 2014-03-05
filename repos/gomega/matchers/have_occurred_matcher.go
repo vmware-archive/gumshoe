@@ -1,20 +1,21 @@
 package matchers
 
 import (
-	"fmt"
+    "fmt"
+    "github.com/pivotal/gumshoe/repos/gomega/format"
 )
 
 type HaveOccurredMatcher struct {
 }
 
 func (matcher *HaveOccurredMatcher) Match(actual interface{}) (success bool, message string, err error) {
-	if actual == nil {
-		return false, formatMessage(actual, "to have occurred"), nil
-	} else {
-		if isError(actual) {
-			return true, fmt.Sprintf("Expected error:%s\n\tMessage: %s\n%s", formatObject(actual), actual.(error).Error(), "not to have occurred"), nil
-		} else {
-			return false, "", fmt.Errorf("Expected an error, got%s", formatObject(actual))
-		}
-	}
+    if actual == nil {
+        return false, format.Message(actual, "to have occurred"), nil
+    } else {
+        if isError(actual) {
+            return true, fmt.Sprintf("Expected error:\n%s\n%s\n%s", format.Object(actual, 1), format.IndentString(actual.(error).Error(), 1), "not to have occurred"), nil
+        } else {
+            return false, "", fmt.Errorf("Expected an error.  Got:\n%s", format.Object(actual, 1))
+        }
+    }
 }
