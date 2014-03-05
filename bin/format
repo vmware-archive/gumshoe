@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+gofmt -w -tabs=false -tabwidth=4 $DIR
