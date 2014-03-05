@@ -11,80 +11,91 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"os/signal"
+	"path/filepath"
+	"sync"
 	"time"
 )
 
 type testRunner struct {
 	numCPU           int
 	parallelStream   bool
-	runMagicI        bool
 	race             bool
 	cover            bool
 	executedCommands []*exec.Cmd
+	compiledArtifact string
 	reports          []*bytes.Buffer
+
+	lock *sync.Mutex
 }
 
 func newTestRunner(numCPU int, parallelStream bool, runMagicI bool, race bool, cover bool) *testRunner {
 	return &testRunner{
 		numCPU:           numCPU,
 		parallelStream:   parallelStream,
-		runMagicI:        runMagicI,
 		race:             race,
 		cover:            cover,
 		executedCommands: []*exec.Cmd{},
 		reports:          []*bytes.Buffer{},
+		lock:             &sync.Mutex{},
 	}
-}
-
-func (t *testRunner) run(suites []*testsuite.TestSuite) bool {
-	t.registerSignalHandler()
-
-	for _, suite := range suites {
-		if !t.runSuite(suite) {
-			return false
-		}
-	}
-
-	return true
 }
 
 func (t *testRunner) runSuite(suite *testsuite.TestSuite) bool {
-	if t.runMagicI {
-		err := t.runGoI(suite)
-		if err != nil {
-			return false
-		}
+	var success bool
+	success = t.compileSuite(suite)
+	if !success {
+		return success
 	}
 
 	if suite.IsGinkgo {
 		if t.numCPU > 1 {
 			if t.parallelStream {
-				return t.runAndStreamParallelGinkgoSuite(suite)
+				success = t.runAndStreamParallelGinkgoSuite(suite)
 			} else {
-				return t.runParallelGinkgoSuite(suite)
+				success = t.runParallelGinkgoSuite(suite)
 			}
 		} else {
-			return t.runSerialGinkgoSuite(suite)
+			success = t.runSerialGinkgoSuite(suite)
 		}
 	} else {
-		return t.runGoTestSuite(suite)
+		success = t.runGoTestSuite(suite)
 	}
+
+	t.cleanUpCompiledSuite()
+	return success
 }
 
-func (t *testRunner) runGoI(suite *testsuite.TestSuite) error {
-	args := []string{"test", "-i"}
+func (t *testRunner) compileSuite(suite *testsuite.TestSuite) bool {
+	args := []string{"test", "-c", "-i"}
 	if t.race {
 		args = append(args, "-race")
 	}
-	args = append(args, suite.Path)
+	if t.cover {
+		args = append(args, "-cover", "-covermode=atomic")
+	}
 	cmd := exec.Command("go", args...)
+	cmd.Dir = suite.Path
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("go test -i %s failed with:\n\n%s", suite.Path, output)
+		fmt.Printf("Failed to compile %s:\n\n%s", suite.PackageName, output)
+		t.compiledArtifact = ""
+		return false
 	}
+	t.compiledArtifact, _ = filepath.Abs(filepath.Join(suite.Path, fmt.Sprintf("%s.test", suite.PackageName)))
+	return true
+}
 
-	return err
+func (t *testRunner) cleanUpCompiledSuite() {
+	os.Remove(t.compiledArtifact)
+}
+
+func (t *testRunner) runSerialGinkgoSuite(suite *testsuite.TestSuite) bool {
+	ginkgoArgs := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
+	return t.runCompiledSuite(suite, ginkgoArgs, nil, os.Stdout, nil)
+}
+
+func (t *testRunner) runGoTestSuite(suite *testsuite.TestSuite) bool {
+	return t.runCompiledSuite(suite, []string{}, nil, os.Stdout, nil)
 }
 
 func (t *testRunner) runParallelGinkgoSuite(suite *testsuite.TestSuite) bool {
@@ -93,13 +104,12 @@ func (t *testRunner) runParallelGinkgoSuite(suite *testsuite.TestSuite) bool {
 		config.GinkgoConfig.ParallelNode = cpu + 1
 		config.GinkgoConfig.ParallelTotal = t.numCPU
 
-		args := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
-		args = append(args, t.commonArgs(suite)...)
+		ginkgoArgs := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
 
 		buffer := new(bytes.Buffer)
 		t.reports = append(t.reports, buffer)
 
-		go t.runCommand(suite.Path, args, nil, buffer, completions)
+		go t.runCompiledSuite(suite, ginkgoArgs, nil, buffer, completions)
 	}
 
 	passed := true
@@ -128,17 +138,15 @@ func (t *testRunner) runAndStreamParallelGinkgoSuite(suite *testsuite.TestSuite)
 
 	server.RegisterReporters(aggregator)
 	server.Start()
-
+	defer server.Stop()
 	serverAddress := server.Address()
 
 	completions := make(chan bool)
-
 	for cpu := 0; cpu < t.numCPU; cpu++ {
 		config.GinkgoConfig.ParallelNode = cpu + 1
 		config.GinkgoConfig.ParallelTotal = t.numCPU
 
-		args := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
-		args = append(args, t.commonArgs(suite)...)
+		ginkgoArgs := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
 
 		env := os.Environ()
 		env = append(env, fmt.Sprintf("GINKGO_REMOTE_REPORTING_SERVER=%s", serverAddress))
@@ -146,7 +154,7 @@ func (t *testRunner) runAndStreamParallelGinkgoSuite(suite *testsuite.TestSuite)
 		buffer := new(bytes.Buffer)
 		t.reports = append(t.reports, buffer)
 
-		go t.runCommand(suite.Path, args, env, buffer, completions)
+		go t.runCompiledSuite(suite, ginkgoArgs, env, buffer, completions)
 	}
 
 	for cpu := 0; cpu < t.numCPU; cpu++ {
@@ -159,6 +167,7 @@ func (t *testRunner) runAndStreamParallelGinkgoSuite(suite *testsuite.TestSuite)
 	var passed = false
 	select {
 	case passed = <-result:
+		fmt.Println("")
 		//the aggregator is done and can tell us whether or not the suite passed
 	case <-time.After(time.Second):
 		//the aggregator never got back to us!  something must have gone wrong
@@ -184,42 +193,24 @@ func (t *testRunner) runAndStreamParallelGinkgoSuite(suite *testsuite.TestSuite)
 		os.Stdout.Sync()
 	}
 
-	server.Stop()
-
 	return passed
 }
 
-func (t *testRunner) runSerialGinkgoSuite(suite *testsuite.TestSuite) bool {
-	args := config.BuildFlagArgs("ginkgo", config.GinkgoConfig, config.DefaultReporterConfig)
-	args = append(args, t.commonArgs(suite)...)
-	return t.runCommand(suite.Path, args, nil, os.Stdout, nil)
-}
-
-func (t *testRunner) runGoTestSuite(suite *testsuite.TestSuite) bool {
-	args := t.commonArgs(suite)
-	return t.runCommand(suite.Path, args, nil, os.Stdout, nil)
-}
-
-func (t *testRunner) commonArgs(suite *testsuite.TestSuite) []string {
-	args := []string{}
-	if t.race {
-		args = append(args, "--race")
-	}
+func (t *testRunner) runCompiledSuite(suite *testsuite.TestSuite, ginkgoArgs []string, env []string, stream io.Writer, completions chan bool) bool {
+	args := []string{"-test.timeout=24h"}
 	if t.cover {
-		args = append([]string{"--cover", "--coverprofile=" + suite.PackageName + ".coverprofile"})
+		args = append(args, "--test.coverprofile="+suite.PackageName+".coverprofile")
 	}
-	return args
-}
 
-func (t *testRunner) runCommand(path string, args []string, env []string, stream io.Writer, completions chan bool) bool {
-	args = append([]string{"test", "-v", "-timeout=24h", path}, args...)
+	args = append(args, ginkgoArgs...)
 
-	cmd := exec.Command("go", args...)
+	cmd := exec.Command(t.compiledArtifact, args...)
 	cmd.Env = env
+	cmd.Dir = suite.Path
 
-	//THIS NEEDS TO BE REMOVED AFTER THE COMAND EXITS
-	//ALSO: NOT THREAD SAFE!
+	t.lock.Lock()
 	t.executedCommands = append(t.executedCommands, cmd)
+	t.lock.Unlock()
 
 	doneStreaming := make(chan bool, 2)
 	streamPipe := func(pipe io.ReadCloser) {
@@ -234,32 +225,44 @@ func (t *testRunner) runCommand(path string, args []string, env []string, stream
 
 	err := cmd.Start()
 	if err != nil {
-		os.Exit(1)
+		fmt.Printf("Failed to run test suite!\n\t%s", err.Error())
+		if completions != nil {
+			completions <- false
+		}
+		return false
 	}
 
 	<-doneStreaming
 	<-doneStreaming
 
 	err = cmd.Wait()
+
+	t.lock.Lock()
+	//delete the command that just finished executing
+	for commandIndex, executedCommand := range t.executedCommands {
+		if executedCommand == cmd {
+			t.executedCommands[commandIndex] = t.executedCommands[len(t.executedCommands)-1]
+			t.executedCommands = t.executedCommands[0 : len(t.executedCommands)-1]
+			break
+		}
+	}
+	t.lock.Unlock()
+
 	if completions != nil {
 		completions <- (err == nil)
 	}
+
 	return err == nil
 }
 
-func (t *testRunner) registerSignalHandler() {
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, os.Kill)
-
-		select {
-		case sig := <-c:
-			for _, cmd := range t.executedCommands {
-				if cmd.Process != nil {
-					cmd.Process.Signal(sig)
-				}
-			}
-			os.Exit(1)
+func (t *testRunner) abort(sig os.Signal) {
+	t.lock.Lock()
+	for _, cmd := range t.executedCommands {
+		if cmd.Process != nil {
+			cmd.Process.Signal(sig)
+			cmd.Wait()
 		}
-	}()
+	}
+	t.lock.Unlock()
+	t.cleanUpCompiledSuite()
 }

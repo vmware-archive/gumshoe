@@ -13,7 +13,6 @@ func Test(t *testing.T) {
 }
 
 //Helpers
-
 func shuffleStrings(arr []string, seed int64) []string {
 	r := rand.New(rand.NewSource(seed))
 	permutation := r.Perm(len(arr))
@@ -33,4 +32,17 @@ type fakeTestingT struct {
 
 func (fakeT *fakeTestingT) Fail() {
 	fakeT.didFail = true
+}
+
+type fakeGinkgoWriter struct {
+	didTruncate bool
+	didDump     bool
+}
+
+func (writer *fakeGinkgoWriter) Truncate() {
+	writer.didTruncate = true
+}
+
+func (writer *fakeGinkgoWriter) DumpOut() {
+	writer.didDump = true
 }

@@ -29,7 +29,7 @@ func newSuite() *suite {
 	}
 }
 
-func (suite *suite) run(t GinkgoTestingT, description string, reporters []Reporter, config config.GinkgoConfigType) bool {
+func (suite *suite) run(t GinkgoTestingT, description string, reporters []Reporter, writer ginkgoWriterInterface, config config.GinkgoConfigType) bool {
 	r := rand.New(rand.NewSource(config.RandomSeed))
 	suite.topLevelContainer.shuffle(r)
 
@@ -41,7 +41,7 @@ func (suite *suite) run(t GinkgoTestingT, description string, reporters []Report
 		panic("ginkgo.parallel.node is one-indexed and must be <= ginkgo.parallel.total")
 	}
 
-	suite.exampleCollection = newExampleCollection(t, description, suite.topLevelContainer.generateExamples(), reporters, config)
+	suite.exampleCollection = newExampleCollection(t, description, suite.topLevelContainer.generateExamples(), reporters, writer, config)
 
 	return suite.exampleCollection.run()
 }
@@ -53,6 +53,10 @@ func (suite *suite) fail(message string, callerSkip int) {
 			codeLocation: types.GenerateCodeLocation(callerSkip + 2),
 		})
 	}
+}
+
+func (suite *suite) currentGinkgoTestDescription() GinkgoTestDescription {
+	return suite.exampleCollection.currentGinkgoTestDescription()
 }
 
 func (suite *suite) pushContainerNode(text string, body func(), flag flagType, codeLocation types.CodeLocation) {

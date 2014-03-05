@@ -17,14 +17,11 @@ import (
 	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
+	"io"
 	"net/http"
 	"os"
 	"time"
 )
-
-type GinkgoTestingT interface {
-	Fail()
-}
 
 const GINKGO_VERSION = config.VERSION
 
@@ -34,7 +31,56 @@ var globalSuite *suite
 
 func init() {
 	config.Flags("ginkgo", true)
+	GinkgoWriter = newGinkgoWriter(os.Stdout)
 	globalSuite = newSuite()
+}
+
+//GinkgoWriter implements an io.Writer
+//When running in verbose mode any writes to GinkgoWriter will be immediately printed
+//to stdout
+//
+//When not in verbose mode, GinkgoWriter will buffer any writes and flush them to screen
+//only if the current test fails.  In this mode, GinkgoWriter is truncated between tests.
+var GinkgoWriter io.Writer
+
+//The interface by which Ginkgo receives *testing.T
+type GinkgoTestingT interface {
+	Fail()
+}
+
+//Some matcher libraries or legacy codebases require a *testing.T
+//GinkgoT implements an interface analogous to *testing.T and can be used if
+//the library in question accepts *testing.T through an interface
+//
+// For example, with testify:
+// assert.Equal(GinkgoT(), 123, 123, "they should be equal")
+//
+// GinkgoT() takes an optional offset argument that can be used to get the
+// correct line number associated with the failure.
+func GinkgoT(optionalOffset ...int) GinkgoTInterface {
+	offset := 3
+	if len(optionalOffset) > 0 {
+		offset = optionalOffset[0]
+	}
+	return newGinkgoTestingTProxy(Fail, offset)
+}
+
+//The interface returned by GinkgoT()
+type GinkgoTInterface interface {
+	Fail()
+	Error(args ...interface{})
+	Errorf(format string, args ...interface{})
+	FailNow()
+	Fatal(args ...interface{})
+	Fatalf(format string, args ...interface{})
+	Log(args ...interface{})
+	Logf(format string, args ...interface{})
+	Failed() bool
+	Parallel()
+	Skip(args ...interface{})
+	Skipf(format string, args ...interface{})
+	SkipNow()
+	Skipped() bool
 }
 
 //Custom Ginkgo test reporters must implement the Reporter interface.
@@ -47,6 +93,29 @@ type Reporter reporters.Reporter
 //Asynchronous specs given a channel of the Done type.  You must close (or send to) the channel
 //to tell Ginkgo that your async test is done.
 type Done chan<- interface{}
+
+//GinkgoTestDescription represents the information about the current running test returned by CurrentGinkgoTest
+//  ComponentTexts: a list of all texts for the Describes & Contexts leading up to the current test
+//  FullTestText: a concatenation of ComponentTexts
+//  TestText: the text in the actual It or Measure node
+//  IsMeasurement: true if the current test is a measurement
+//  FileName: the name of the file containing the current test
+//  LineNumber: the line number for the current test
+type GinkgoTestDescription struct {
+	ComponentTexts []string
+	FullTestText   string
+	TestText       string
+
+	IsMeasurement bool
+
+	FileName   string
+	LineNumber int
+}
+
+//CurrentGinkgoTestDescripton returns information about the current running test.
+func CurrentGinkgoTestDescription() GinkgoTestDescription {
+	return globalSuite.currentGinkgoTestDescription()
+}
 
 //Measurement tests receive a Benchmarker.
 //
@@ -69,20 +138,22 @@ type Benchmarker interface {
 //	ginkgo bootstrap
 func RunSpecs(t GinkgoTestingT, description string) bool {
 	specReporters := []Reporter{buildDefaultReporter()}
-	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
+	return RunSpecsWithCustomReporters(t, description, specReporters)
 }
 
 //To run your tests with Ginkgo's default reporter and your custom reporter(s), replace
 //RunSpecs() with this method.
 func RunSpecsWithDefaultAndCustomReporters(t GinkgoTestingT, description string, specReporters []Reporter) bool {
 	specReporters = append([]Reporter{buildDefaultReporter()}, specReporters...)
-	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
+	return RunSpecsWithCustomReporters(t, description, specReporters)
 }
 
 //To run your tests with your custom reporter(s) (and *not* Ginkgo's default reporter), replace
 //RunSpecs() with this method.
 func RunSpecsWithCustomReporters(t GinkgoTestingT, description string, specReporters []Reporter) bool {
-	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
+	writer := GinkgoWriter.(*ginkgoWriter)
+	writer.setDirectToStdout(config.DefaultReporterConfig.Verbose)
+	return globalSuite.run(t, description, specReporters, writer, config.GinkgoConfig)
 }
 
 func buildDefaultReporter() Reporter {
@@ -179,14 +250,14 @@ func FIt(text string, body interface{}, timeout ...float64) bool {
 }
 
 //You can mark Its as pending using PIt
-func PIt(text string, body interface{}, timeout ...float64) bool {
-	globalSuite.pushItNode(text, body, flagTypePending, types.GenerateCodeLocation(1), parseTimeout(timeout...))
+func PIt(text string, _ ...interface{}) bool {
+	globalSuite.pushItNode(text, func() {}, flagTypePending, types.GenerateCodeLocation(1), 0)
 	return true
 }
 
 //You can mark Its as pending using XIt
-func XIt(text string, body interface{}, timeout ...float64) bool {
-	globalSuite.pushItNode(text, body, flagTypePending, types.GenerateCodeLocation(1), parseTimeout(timeout...))
+func XIt(text string, _ ...interface{}) bool {
+	globalSuite.pushItNode(text, func() {}, flagTypePending, types.GenerateCodeLocation(1), 0)
 	return true
 }
 
@@ -204,14 +275,14 @@ func FMeasure(text string, body func(Benchmarker), samples int) bool {
 }
 
 //You can mark Maeasurements as pending using PMeasure
-func PMeasure(text string, body func(Benchmarker), samples int) bool {
-	globalSuite.pushMeasureNode(text, body, flagTypePending, types.GenerateCodeLocation(1), samples)
+func PMeasure(text string, _ ...interface{}) bool {
+	globalSuite.pushMeasureNode(text, func(b Benchmarker) {}, flagTypePending, types.GenerateCodeLocation(1), 0)
 	return true
 }
 
 //You can mark Maeasurements as pending using XMeasure
-func XMeasure(text string, body func(Benchmarker), samples int) bool {
-	globalSuite.pushMeasureNode(text, body, flagTypePending, types.GenerateCodeLocation(1), samples)
+func XMeasure(text string, _ ...interface{}) bool {
+	globalSuite.pushMeasureNode(text, func(b Benchmarker) {}, flagTypePending, types.GenerateCodeLocation(1), 0)
 	return true
 }
 
